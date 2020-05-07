@@ -1,0 +1,30 @@
+{
+  "name": "DACK",
+  "version": "1.0.0",
+  "description": "Ứng dụng internet backing dành cho đồ án cuối kì môn phát triển ứng dụng web nâng cao",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app",
+    "dev": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ntquang98/WEBNC_Internet_Banking.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ntquang98/WEBNC_Internet_Banking/issues"
+  },
+  "homepage": "https://github.com/ntquang98/WEBNC_Internet_Banking#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0"
+  }
+}
