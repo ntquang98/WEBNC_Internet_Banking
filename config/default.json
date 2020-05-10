@@ -1,0 +1,8 @@
+{
+  "mongodb": {
+    "url": "..."
+  },
+  "auth": {
+    "secret": "secretKey"
+  }
+}
