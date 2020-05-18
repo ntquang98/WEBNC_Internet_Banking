@@ -1,35 +1,50 @@
-import dataConfig from '../config';
+const dataConfig = require('../config/default.json');
 const moment = require('moment');
 const crypto = require('crypto');
+const openpgp = require('openpgp');
+const Bank = require('./bank');
+const db = require('./db');
 
 module.exports = {
-  checkPartner: (securityKey) => {
+  checkPartner: async (securityKey) => {
     if (securityKey) {
-      let partnerArray = dataConfig ? dataConfig.partner : [];
-      if (Array.isArray(partnerArray) && partnerArray.length > 0) {
-        let partner = partnerArray.filter((item) => {
-          return item.securityKey == securityKey;
-        })
-        if (Array.isArray(partner) && partner.length > 0) return partner[0];
+      let partner = await db.find({ model: Bank, data: { security_key: securityKey } });
+      if (partner) {
+        return partner;
       }
     }
-    return false;
+    return null;
   },
 
-  isPackageNew: (timestamp) => {
+  isNewPackage: (timestamp) => {
     return moment().unix() - timestamp <= 60
   },
 
-  isOriginPackage: (data, timestamp, sig, securityKey) => {
+  isOriginPackage: (data, timestamp, sig, securityKey, encodeType) => {
     let _data = JSON.stringify(data, null, 2);
-    let endCodeSecurity = md5(timestamp + _data + securityKey);
-    return sig == endCodeSecurity
+    let hash = crypto.createHash(encodeType);
+    let endCodeSecurity = hash.update(timestamp + _data + securityKey).digest('hex');
+    return sig === endCodeSecurity
   },
 
-  verifySignature: (data, signature, publicKey, signatureEncode) => {
-    const verify = crypto.createVerify(signatureEncode);
-    verify.write(data);
-    verify.end();
-    return verify.verify(publicKey, signature, 'hex');
+  verifySignature: async (data, signature, publicKey, signatureEncode, publicKeyType) => {
+    if (publicKeyType === 'rsa') {
+      return verifyRSA(data, signature, signatureEncode, publicKey);
+    }
+    return await verifyPGP(data, signature, publicKey);
   }
 };
+
+const verifyRSA = (data, signature, encodeType, publicKey) => {
+  let verifier = crypto.createVerify(encodeType);
+  verifier.update(data);
+  return verifier.verify(publicKey, signature, 'hex');
+}
+
+const verifyPGP = async (data, signature, publicKey) => {
+  const verifier = await openpgp.verify({
+    message: await openpgp.cleartext.readArmored(data),
+    publicKeys: (await openpgp.key.readArmored(publicKey)).keys
+  });
+  return verifier.signatures[0];
+}
