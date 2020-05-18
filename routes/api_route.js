@@ -18,7 +18,10 @@ router.post('/insert', async (req,res) =>{
   }else{
     
     var result = await api_model.insert({attribute_data:attribute_data,model:model })
-
+    if(result.success==false){
+      res.json(result).status(400);
+      return;
+    }
     res.json(result)
   }
 })
@@ -31,7 +34,10 @@ router.post('/update', async (req,res) =>{
   }else{
 
     var result = await api_model.update({attribute_data:attribute_data, model:model})
-
+    if(result.success==false){
+      res.json(result).status(400);
+      return;
+    }
     res.json(result)
   }
 }),
@@ -49,7 +55,10 @@ router.get('/find', async(req, res)=>{
   }
 
   var result = await api_model.find({user:user, model:model})
-
+  if(result.success==false){
+    res.json(result).status(400);
+    return;
+  }
   res.json(result)
 })
 router.delete('/delete', async(req, res)=>{
@@ -58,6 +67,10 @@ router.delete('/delete', async(req, res)=>{
   query = req.query;
 
   var result = await api_model.delete({query:query, model:model})
+  if(result.success==false){
+    res.json(result).status(400);
+    return;
+  }
   res.json(result)
 })
 

@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 
 app.use(`/user`, require('./routes/api_route'));
 app.use(`/taikhoan`, require('./routes/api_route'));
+app.use(`/tranfer_history`, require('./routes/api_route'));
 
 app.use((req, res, next) => {
   res.status(404).send('Not found');

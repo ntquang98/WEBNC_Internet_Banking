@@ -1,6 +1,7 @@
 const db = require('../utils/db');
 const User = require('../utils/user');
 const Taikhoan = require('../utils/account');
+const Tranfer_history = require('../utils/tranfer_history');
 
 function getModel(model){
   let MODEL = User;
@@ -11,6 +12,9 @@ function getModel(model){
     case 'taikhoan':{
       MODEL = Taikhoan;
     }break;
+    case 'tranfer_history':{
+      MODEL = Tranfer_history;
+    }
   }
 
   return MODEL;
