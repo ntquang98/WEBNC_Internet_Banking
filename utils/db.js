@@ -1,17 +1,17 @@
 
 module.exports = {
-  insert: ({ model: model, data: data }) => new Promise(async resolve => {
+  insert: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
     model.collection.insertMany(data)
       .then(data => {
         resolve({ success: true })
       })
       .catch(err => {
         console.log(err);
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   }),
 
-  find: ({ model: model, data: data }) => new Promise(async resolve => {
+  find: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
     model.find(data || {})
       .exec()
       .then(data => {
@@ -20,11 +20,11 @@ module.exports = {
         }
       })
       .catch(err => {
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   }),
 
-  updateOne: ({ model: model, data: data }) => new Promise(async resolve => {
+  updateOne: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
 
     model.updateOne({ _id: data.id }, { $set: data.data })
       .exec()
@@ -33,11 +33,11 @@ module.exports = {
           resolve({ success: true })
         }
       }).catch(err => {
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   }),
 
-  updateMany: ({ model: model, data: data }) => new Promise(async resolve => {
+  updateMany: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
 
     model.updateMany(data.data_up, { $set: data.data_down })
       .exec()
@@ -46,11 +46,11 @@ module.exports = {
           resolve({ success: true })
         }
       }).catch(err => {
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   }),
 
-  deleteOne: ({ model: model, data: data }) => new Promise(async resolve => {
+  deleteOne: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
     model.deleteOne(data)
       .exec()
       .then(data => {
@@ -59,11 +59,11 @@ module.exports = {
         } else resolve({ success: false })
       })
       .catch(err => {
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   }),
 
-  deleteMany: ({ model: model, data: data }) => new Promise(async resolve => {
+  deleteMany: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
     model.deleteMany(data)
       .exec()
       .then(data => {
@@ -72,7 +72,7 @@ module.exports = {
         }
       })
       .catch(err => {
-        resolve({ success: false, error_msgs: err })
+        reject({ success: false, error_msgs: err })
       })
   })
 };

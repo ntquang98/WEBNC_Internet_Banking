@@ -43,7 +43,8 @@ const verifyRSA = (data, signature, encodeType, publicKey) => {
 
 const verifyPGP = async (data, signature, publicKey) => {
   const verifier = await openpgp.verify({
-    message: await openpgp.cleartext.readArmored(data),
+    message: openpgp.cleartext.fromText(data),
+    signature: openpgp.signature.readArmored(signature),
     publicKeys: (await openpgp.key.readArmored(publicKey)).keys
   });
   return verifier.signatures[0];
