@@ -6,8 +6,8 @@ const user = new mongoose.Schema({
     email: { type: String },
     dob: { type: String },
     sub_user: { type: String },
-    user_role: { type: String }
-	user_id: {type: String}
+    user_role: { type: String },
+    user_id: { type: String }
 })
 
 // eslint-disable-next-line no-undef

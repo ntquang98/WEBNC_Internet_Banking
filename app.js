@@ -1,7 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
+require('dotenv').config()
 require('express-async-errors');
 
 const app = express();
@@ -24,8 +25,9 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch(err => {
     console.log("database connection failed")
   });
+
 app.get('/', (req, res) => {
-  res.status(200).json({message: "Hello Hooman!!!"});
+  res.status(200).json({ message: "Hello Hooman!!!" });
 });
 
 app.use(`/api/v1/taikhoan`, require('./routes/api_route'));

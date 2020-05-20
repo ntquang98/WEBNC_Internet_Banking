@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const model = require('../models/linked_bank.model');
+const api_query = require('../models/api_query');
 const createError = require('http-errors');
 const { slimCheck, fullCheck } = require('../middlewares/security.middleware');
 
@@ -47,7 +48,25 @@ router.post('/', async (req, res) => {
  */
 
 router.get('/account', slimCheck, async (req, res) => {
+  try {
+    let result = await api_query.query({
+      data: {
+        input: [{
+          model: "taikhoan",
+          data: { account_number: req.body.data.account_number }
+        }],
+        output: [{ model: "user" }]
+      }
+    });
 
+    let ret = {
+      username: result.attribute_data[0].username
+    }
+
+    return res.status(200).send(ret);
+  } catch (err) {
+    throw createError(404, "Not found account number");
+  }
 });
 
 // send money

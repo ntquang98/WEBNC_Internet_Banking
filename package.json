@@ -27,7 +27,7 @@
     "express-async-errors": "^3.1.1",
     "http-errors": "^1.7.3",
     "moment": "^2.25.3",
-    "mongoose": "^5.9.15",
+    "mongoose": "^5.9.14",
     "morgan": "^1.10.0",
     "openpgp": "^4.10.4"
   },

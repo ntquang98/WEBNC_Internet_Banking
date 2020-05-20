@@ -15,8 +15,10 @@ module.exports = {
     model.find(data || {})
       .exec()
       .then(data => {
-        if (data) {
+        if (data && data.length > 0) {
           resolve({ success: true, attribute_data: data })
+        } else {
+          reject({ success: false })
         }
       })
       .catch(err => {
@@ -56,7 +58,7 @@ module.exports = {
       .then(data => {
         if (data) {
           resolve({ success: true })
-        } else resolve({ success: false })
+        } else reject({ success: false })
       })
       .catch(err => {
         reject({ success: false, error_msgs: err })

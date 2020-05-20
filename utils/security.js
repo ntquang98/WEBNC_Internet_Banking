@@ -8,9 +8,13 @@ const db = require('./db');
 module.exports = {
   checkPartner: async (securityKey) => {
     if (securityKey) {
-      let partner = await db.find({ model: Bank, data: { security_key: securityKey } });
-      if (partner) {
-        return partner;
+      try {
+        let partner = await db.find({ model: Bank, data: { security_key: securityKey } });
+        if (partner) {
+          return partner;
+        }
+      } catch (err) {
+        return null;
       }
     }
     return null;
@@ -22,23 +26,31 @@ module.exports = {
 
   isOriginPackage: (data, timestamp, sig, securityKey, encodeType) => {
     let _data = JSON.stringify(data, null, 2);
-    let hash = crypto.createHash(encodeType);
-    let endCodeSecurity = hash.update(timestamp + _data + securityKey).digest('hex');
-    return sig === endCodeSecurity
+    let hash = crypto.createHash(encodeType).update(timestamp + _data + securityKey).digest('hex');
+    return sig == hash;
+
   },
 
   verifySignature: async (data, signature, publicKey, signatureEncode, publicKeyType) => {
+    let _data = JSON.stringify(data, null, 2)
     if (publicKeyType === 'rsa') {
-      return verifyRSA(data, signature, signatureEncode, publicKey);
+      return verifyRSA(_data, signature, signatureEncode, publicKey);
     }
-    return await verifyPGP(data, signature, publicKey);
-  }
+    return await verifyPGP(_data, signature, publicKey);
+  },
+
+  encrypt: async (data, encodeType, privateKey, signature_format) => {
+    const sign = crypto.createSign(encodeType);
+    sign.update(data);
+    return sign.sign(privateKey, signature_format);
+  },
 };
 
 const verifyRSA = (data, signature, encodeType, publicKey) => {
   let verifier = crypto.createVerify(encodeType);
   verifier.update(data);
-  return verifier.verify(publicKey, signature, 'hex');
+  let ver = verifier.verify(publicKey, signature, 'hex');
+  return ver;
 }
 
 const verifyPGP = async (data, signature, publicKey) => {

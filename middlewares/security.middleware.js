@@ -23,8 +23,9 @@ const slimCheck = (req, res, next) => {
 
   let partner = checkPartner(security_key);
   if (partner) {
+    let { encode_type } = partner.attribute_data[0];
     if (isNewPackage(timestamp) &&
-      isOriginPackage(data, timestamp, hash, security_key, partner.encode_type)) {
+      isOriginPackage(data, timestamp, hash, security_key, encode_type)) {
       next();
     }
   }
@@ -37,9 +38,11 @@ const fullCheck = (req, res, next) => {
   let { data, hash, signature } = req.body;
   let partner = checkPartner(security_key);
   if (partner) {
+    let { encode_type, public_key, public_key_type } = partner.attribute_data[0];
+    public_key = public_key.replace(/\\n/g, '\n');
     if (isNewPackage(timestamp) &&
-      isOriginPackage(data, timestamp, hash, security_key, partner.encode_type) &&
-      verifySignature(data, signature, partner.public_key, partner.public_key_type)) {
+      isOriginPackage(data, timestamp, hash, security_key, encode_type) &&
+      verifySignature(data, signature, public_key, public_key_type)) {
       next();
     }
   }

@@ -6,7 +6,10 @@ let my_bank = new mongoose.Schema({
   private_key: String,
   key_length: Number,
   crypt_type: String,
-  secret_key: String
+  secret_key: String,
+  public_key_pgp: String,
+  private_key_pgp: String,
+  passphrase: String
 });
 
 
