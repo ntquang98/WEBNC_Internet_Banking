@@ -40,8 +40,9 @@ module.exports = {
   },
 
   encrypt: async (data, encodeType, privateKey, signature_format) => {
+    const _data = JSON.stringify(data, null, 2);
     const sign = crypto.createSign(encodeType);
-    sign.update(data);
+    sign.update(_data);
     return sign.sign(privateKey, signature_format);
   },
 };

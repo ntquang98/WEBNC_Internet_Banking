@@ -30,7 +30,7 @@ const createTestReq = async () => {
     body: {
       data,
       hash,
-      signature: await encrypt(_data, signature_encode_type, private_key, signature_format)
+      signature: await encrypt(data, signature_encode_type, private_key, signature_format)
     }
   }
   return req;
@@ -57,7 +57,7 @@ const createErrorReq = async () => {
     body: {
       data,
       hash,
-      signature: await encrypt(_data, signature_encode_type, private_key, signature_format)
+      signature: await encrypt(data, signature_encode_type, private_key, signature_format)
     }
   }
   return req;
@@ -78,8 +78,6 @@ describe("verifyRSA", () => {
     public_key = public_key.replace(/\\n/g, '\n');
     let valid = await verifySignature(req.body.data, req.body.signature, public_key, signature_encode_type, encrypt_type);
     expect(valid).toBe(true);
-
-    // TODO: test Node-rsa
   });
 
   it("should fail when req have been changed, not origin package", async () => {

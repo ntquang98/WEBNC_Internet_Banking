@@ -48,6 +48,13 @@ router.post('/', async (req, res) => {
  */
 
 router.get('/account', slimCheck, async (req, res) => {
+  /**
+   * TODO:
+   * get /account
+   * Lấy dữ liệu user gửi cho đối tác
+   * Dữ liệu bao gồm username, Họ và tên -> xong
+   */
+
   try {
     let result = await api_query.query({
       data: {
@@ -71,7 +78,13 @@ router.get('/account', slimCheck, async (req, res) => {
 
 // send money
 router.post('/account', fullCheck, async (req, res) => {
-
+  /**
+   * TODO:
+   * post /account
+   * 1. Lấy tài khoản
+   * 2. Tăng tiền cho tài khoản
+   * 3. Kí gói tin trả cho đối tác dùng hàm encrypt
+  */
 });
 
 module.exports = router;
