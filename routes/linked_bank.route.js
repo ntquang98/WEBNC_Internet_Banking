@@ -14,7 +14,8 @@ router.post('/', async (req, res) => {
       myBank = myBank.attribute_data[0];
       let ret = {
         bank_name: myBank.bank_name,
-        public_key: myBank.public_key,
+        public_key_rsa: myBank.public_key,
+        public_key_pgp: myBank.public_key_pgp,
         key_length: myBank.key_length,
         crypt_type: myBank.crypt_type,
         secret_key: myBank.secret_key
