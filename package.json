@@ -4,7 +4,7 @@
   "description": "Ứng dụng internet backing dành cho đồ án cuối kì môn phát triển ứng dụng web nâng cao",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node app",
     "dev": "nodemon app"
   },
@@ -21,11 +21,22 @@
   "homepage": "https://github.com/ntquang98/WEBNC_Internet_Banking#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.0.0",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
-    "morgan": "^1.10.0"
+    "http-errors": "^1.7.3",
+    "moment": "^2.25.3",
+    "mongoose": "^5.9.14",
+    "morgan": "^1.10.0",
+    "openpgp": "^4.10.4"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0"
+    "babel-eslint": "^10.1.0",
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
