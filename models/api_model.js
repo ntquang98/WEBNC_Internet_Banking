@@ -61,7 +61,6 @@ module.exports = {
 
   delete: async ({ query: data, model: model }) => {
     let mod = getModel(model);
-    console.log('mod', model)
     if (data && Object.keys(data)[0]) {
       let deleteOne_result = await db.deleteOne({ model: mod, data: data });
       return deleteOne_result;

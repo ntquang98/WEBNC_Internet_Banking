@@ -6,7 +6,6 @@ module.exports = {
         resolve({ success: true })
       })
       .catch(err => {
-        console.log(err);
         reject({ success: false, error_msgs: err })
       })
   }),

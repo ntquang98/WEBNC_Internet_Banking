@@ -68,7 +68,7 @@ router.get('/account', slimCheck, async (req, res) => {
         output: [{ model: "user" }]
       }
     });
-
+    console.warn("result ne", result) // FIXME: đang sai chỗ này nè 
     let ret = {
       username: result.attribute_data[0].username
     }
@@ -91,20 +91,22 @@ router.post('/account', fullCheck, async (req, res) => {
   try {
     let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
     let clientAccount = clientAccounts.attribute_data[0];
-    let { account_value, account_number } = clientAccount || {};
+    let { _id, account_value, account_number } = clientAccount || {};
     account_value = Number(account_value) + Number(req.body.data.amount);
-    db.updateOne({ model: Account, data: { id: account_number, account_value: account_value } }).then((result) => {
-      let myBank = await model.findMyBank();
-      myBank = myBank.attribute_data[0];
-      let data = {
-        success: true
-      };
-      let sig = await security.encrypt(JSON.stringify(data, null, 2), 'sha256', myBank.private_key, 'hex');
-      let ret = { data, sig };
-      return res.status(200).send(ret);
-    }).catch((err) => {
-      throw createError(404, "Can not update account amount!");
-    });
+    db.updateOne({ model: Account, data: { id: _id, account_value: account_value } })
+      .then(async (result) => {
+        console.warn(result);
+        let myBank = await model.findMyBank();
+        myBank = myBank.attribute_data[0];
+        let data = {
+          success: true
+        };
+        let sig = await security.encrypt(JSON.stringify(data, null, 2), 'sha256', myBank.private_key, 'hex');
+        let ret = { data, sig };
+        return res.status(200).send(ret);
+      }).catch((err) => {
+        throw createError(404, "Can not update account amount!");
+      });
   } catch (err) {
     throw createError(404, "Not found account number");
   }

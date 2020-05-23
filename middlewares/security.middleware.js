@@ -17,26 +17,26 @@ const createError = require('http-errors');
  * }
  */
 
-const slimCheck = (req, res, next) => {
+const slimCheck = async (req, res, next) => {
   let { timestamp, security_key } = req.headers;
   let { data, hash } = req.body;
 
-  let partner = checkPartner(security_key);
+  let partner = await checkPartner(security_key);
   if (partner) {
     let { encode_type } = partner.attribute_data[0];
     if (isNewPackage(timestamp) &&
       isOriginPackage(data, timestamp, hash, security_key, encode_type)) {
       next();
     }
+  } else {
+    throw createError(400, "Bad request");
   }
-  throw createError(400, "Bad request");
 }
 
-// TODO: Error ghi cái gì đây
-const fullCheck = (req, res, next) => {
+const fullCheck = async (req, res, next) => {
   let { timestamp, security_key } = req.headers;
   let { data, hash, signature } = req.body;
-  let partner = checkPartner(security_key);
+  let partner = await checkPartner(security_key);
   if (partner) {
     let { encode_type, public_key, public_key_type } = partner.attribute_data[0];
     public_key = public_key.replace(/\\n/g, '\n');
