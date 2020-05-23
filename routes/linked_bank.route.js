@@ -7,6 +7,7 @@ const { slimCheck, fullCheck } = require('../middlewares/security.middleware');
 const db = require('../utils/db');
 const Account = require('../utils/account');
 const security = require('../utils/security');
+const moment = require('moment');
 
 router.post('/', async (req, res) => {
   let data = req.body;
@@ -52,12 +53,6 @@ router.post('/', async (req, res) => {
  */
 
 router.get('/account', slimCheck, async (req, res) => {
-  /**
-   * TODO:
-   * get /account
-   * Lấy dữ liệu user gửi cho đối tác
-   * Dữ liệu bao gồm username, Họ và tên -> xong
-   */
   try {
     let result = await api_query.query({
       data: {
@@ -80,31 +75,41 @@ router.get('/account', slimCheck, async (req, res) => {
 
 // send money
 router.post('/account', fullCheck, async (req, res) => {
-  /**
-   * TODO:
-   * post /account
-   * 1. Lấy tài khoản
-   * 2. Tăng tiền cho tài khoản
-   * 3. Kí gói tin trả cho đối tác dùng hàm encrypt
-  */
   try {
-    let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
+    /* let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
     let clientAccount = clientAccounts.attribute_data[0];
     let { account_value, account_number } = clientAccount || {};
-    account_value = account_value + Number(req.body.data.amount);
+
+    console.log('after update', clientAccount);
+
+    let amount = account_value + req.body.data.amount;
+
+    console.log('amount after update', amount);
 
     let updateResult = await api_query.transfer({
       data: {
         input: [{
           account_number: account_number,
-          account_value: account_value
+          account_value: amount
         }],
         output: [{
           model: "account",
           account_number: account_number
         }]
       }
+    }); */
+
+    let result = await db.increaseField({
+      model: Account,
+      query: { account_number: req.body.data.account_number },
+      data: { account_value: req.body.data.amount }
     });
+
+    let updateResult = {
+      success: true,
+      timestamp: moment().unix(),
+      data: req.body.data
+    }
 
     let myBank = await model.findMyBank();
     myBank = myBank.attribute_data[0];
@@ -112,11 +117,6 @@ router.post('/account', fullCheck, async (req, res) => {
     let sig = await security.encrypt(updateResult, 'sha256', private_key, 'hex');
     let ret = { data: updateResult, sig };
     return res.status(200).send(ret);
-    /* db.updateOne({ model: Account, data: { id: _id, account_value: account_value } })
-      .then(async (result) => {
-      }).catch((err) => {
-        throw createError(404, "Can not update account amount!");
-      }); */
   } catch (err) {
     throw createError(404, "Not found account number");
   }

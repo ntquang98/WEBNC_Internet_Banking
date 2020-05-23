@@ -75,5 +75,16 @@ module.exports = {
       .catch(err => {
         reject({ success: false, error_msgs: err })
       })
+  }),
+
+  increaseField: ({ model: model, query: query, data: data }) => new Promise((resolve, reject) => {
+    model.findOneAndUpdate(query, { $inc: data })
+      .exec()
+      .then(data => {
+        resolve({ success: true, data });
+      })
+      .catch(error => {
+        reject({ success: false, error_msgs: error });
+      })
   })
 };

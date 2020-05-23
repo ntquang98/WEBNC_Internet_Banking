@@ -9,10 +9,10 @@ uri = process.env.Mongo_URI_TEST;
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(data => {
-    console.log("database connected")
+    // do not thing
   })
   .catch(err => {
-    console.log("database connection failed")
+    throw err;
   });
 
 app.get('/', (req, res) => {
@@ -31,4 +31,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send({ "message": err.message });
 });
 
-module.exports = app;
+const disconnect = async () => {
+  await mongoose.disconnect();
+}
+
+module.exports = { app, disconnect };
