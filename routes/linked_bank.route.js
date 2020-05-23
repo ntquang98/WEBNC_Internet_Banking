@@ -4,6 +4,9 @@ const model = require('../models/linked_bank.model');
 const api_query = require('../models/api_query');
 const createError = require('http-errors');
 const { slimCheck, fullCheck } = require('../middlewares/security.middleware');
+const db = require('../utils/db');
+const Account = require('../utils/account');
+const security = require('../utils/security');
 
 router.post('/', async (req, res) => {
   let data = req.body;
@@ -85,6 +88,26 @@ router.post('/account', fullCheck, async (req, res) => {
    * 2. Tăng tiền cho tài khoản
    * 3. Kí gói tin trả cho đối tác dùng hàm encrypt
   */
+  try {
+    let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
+    let clientAccount = clientAccounts.attribute_data[0];
+    let { account_value, account_number } = clientAccount || {};
+    account_value = Number(account_value) + Number(req.body.data.amount);
+    db.updateOne({ model: Account, data: { id: account_number, account_value: account_value } }).then((result) => {
+      let myBank = await model.findMyBank();
+      myBank = myBank.attribute_data[0];
+      let data = {
+        success: true
+      };
+      let sig = await security.encrypt(JSON.stringify(data, null, 2), 'sha256', myBank.private_key, 'hex');
+      let ret = { data, sig };
+      return res.status(200).send(ret);
+    }).catch((err) => {
+      throw createError(404, "Can not update account amount!");
+    });
+  } catch (err) {
+    throw createError(404, "Not found account number");
+  }
 });
 
 module.exports = router;
