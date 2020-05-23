@@ -35,7 +35,6 @@ router.post('/partner', (req, res, next) => {
    * 7.1 If not -> error
    * 
    */
-
 })
 
 module.exports = router;

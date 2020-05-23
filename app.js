@@ -29,11 +29,9 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: "Hello Hooman!!!" });
 });
 
-app.use(`/api/v1/taikhoan`, require('./routes/api_route'));
-app.use(`/api/v1/user`, require('./routes/api_route'));
 app.use(`/api/v1/linked`, require('./routes/linked_bank.route'));
 app.use(`/user`, require('./routes/api_route'));
-app.use(`/taikhoan`, require('./routes/api_route'));
+app.use(`/account`, require('./routes/api_route'));
 app.use(`/tranfer_history`, require('./routes/api_route'));
 app.use(`/query`, require('./routes/api_query'))
 

@@ -15,13 +15,12 @@ beforeAll(async () => {
 
 describe('Get Should Success', () => {
   it('should get account owner information', async (done) => {
-    let data = { account_number: "00063553" };
+    let data = { account_number: "00051027" };
     let timestamp = moment().unix();
     let security_key = "test1";
     let _data = JSON.stringify(data, null, 2);
-    let res;
     try {
-      res = await request(app)
+      let res = await request(app)
         .get('/api/v1/linked/account')
         .set({
           timestamp,
@@ -30,36 +29,42 @@ describe('Get Should Success', () => {
         .send({
           data,
           hash: crypto.createHash('sha256').update(timestamp + _data + security_key).digest('hex')
-        })
+        });
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toBeTruthy();
+      done();
     } catch (error) {
       return done(error);
     }
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toBeTruthy();
-    done();
   });
 
-  /* it('should update account 00063553, 10000', async () => {
-    let data = { account_number: "00063553", amount: 10000 };
+  it('should update account 00051027, 10000', async done => {
+    let data = { account_number: "00051027", amount: 10000 };
     let timestamp = moment().unix();
     let security_key = "test1";
     let _data = JSON.stringify(data, null, 2);
     let bank = await find({ security_key });
     let { private_key } = bank.attribute_data[0];
     private_key = private_key.replace(/\\n/g, '\n');
-    let res = await request(app)
-      .post('/api/v1/linked/account')
-      .set({
-        timestamp,
-        security_key
-      })
-      .send({
-        data,
-        hash: crypto.createHash('sha256').update(timestamp + _data + security_key).digest('hex'),
-        signature: await encrypt(data, 'sha256', private_key, 'hex')
-      });
-    expect(res.statusCode).toEqual(200);
-  }); */
+
+    try {
+      let res = await request(app)
+        .post('/api/v1/linked/account')
+        .set({
+          timestamp,
+          security_key
+        })
+        .send({
+          data,
+          hash: crypto.createHash('sha256').update(timestamp + _data + security_key).digest('hex'),
+          signature: await encrypt(data, 'sha256', private_key, 'hex')
+        });
+      expect(res.statusCode).toEqual(200);
+      done();
+    } catch (err) {
+      done(err);
+    }
+  });
 });
 
 afterAll(async done => {

@@ -1,16 +1,16 @@
 const db = require('../utils/db');
 const User = require('../utils/user');
-const Taikhoan = require('../utils/account');
+const Account = require('../utils/account');
 const Tranfer_history = require('../utils/tranfer_history');
 
 function getModel(model) {
-  let MODEL = User;
+  let MODEL = null;
   switch (model) {
     case 'user': {
       MODEL = User;
     } break;
-    case 'taikhoan': {
-      MODEL = Taikhoan;
+    case 'account': {
+      MODEL = Account;
     } break;
     case 'tranfer_history': {
       MODEL = Tranfer_history;

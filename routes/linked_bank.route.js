@@ -17,7 +17,8 @@ router.post('/', async (req, res) => {
       myBank = myBank.attribute_data[0];
       let ret = {
         bank_name: myBank.bank_name,
-        public_key: myBank.public_key,
+        public_key_rsa: myBank.public_key,
+        public_key_pgp: myBank.public_key_pgp,
         key_length: myBank.key_length,
         crypt_type: myBank.crypt_type,
         secret_key: myBank.secret_key
@@ -57,18 +58,16 @@ router.get('/account', slimCheck, async (req, res) => {
    * Lấy dữ liệu user gửi cho đối tác
    * Dữ liệu bao gồm username, Họ và tên -> xong
    */
-
   try {
     let result = await api_query.query({
       data: {
         input: [{
-          model: "taikhoan",
+          model: "account",
           data: { account_number: req.body.data.account_number }
         }],
         output: [{ model: "user" }]
       }
     });
-    console.warn("result ne", result) // FIXME: đang sai chỗ này nè 
     let ret = {
       username: result.attribute_data[0].username
     }
@@ -91,22 +90,33 @@ router.post('/account', fullCheck, async (req, res) => {
   try {
     let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
     let clientAccount = clientAccounts.attribute_data[0];
-    let { _id, account_value, account_number } = clientAccount || {};
-    account_value = Number(account_value) + Number(req.body.data.amount);
-    db.updateOne({ model: Account, data: { id: _id, account_value: account_value } })
+    let { account_value, account_number } = clientAccount || {};
+    account_value = account_value + Number(req.body.data.amount);
+
+    let updateResult = await api_query.transfer({
+      data: {
+        input: [{
+          account_number: account_number,
+          account_value: account_value
+        }],
+        output: [{
+          model: "account",
+          account_number: account_number
+        }]
+      }
+    });
+
+    let myBank = await model.findMyBank();
+    myBank = myBank.attribute_data[0];
+    let private_key = myBank.private_key.replace(/\\n/g, '\n');
+    let sig = await security.encrypt(updateResult, 'sha256', private_key, 'hex');
+    let ret = { data: updateResult, sig };
+    return res.status(200).send(ret);
+    /* db.updateOne({ model: Account, data: { id: _id, account_value: account_value } })
       .then(async (result) => {
-        console.warn(result);
-        let myBank = await model.findMyBank();
-        myBank = myBank.attribute_data[0];
-        let data = {
-          success: true
-        };
-        let sig = await security.encrypt(JSON.stringify(data, null, 2), 'sha256', myBank.private_key, 'hex');
-        let ret = { data, sig };
-        return res.status(200).send(ret);
       }).catch((err) => {
         throw createError(404, "Can not update account amount!");
-      });
+      }); */
   } catch (err) {
     throw createError(404, "Not found account number");
   }
