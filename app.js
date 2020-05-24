@@ -34,6 +34,7 @@ app.use(`/user`, require('./routes/api_route'));
 app.use(`/account`, require('./routes/api_route'));
 app.use(`/tranfer_history`, require('./routes/api_route'));
 app.use(`/query`, require('./routes/api_query'))
+app.use(`/test`, require('./routes/test.routes'));
 
 app.use((req, res, next) => {
   res.status(404).send('Not found');
