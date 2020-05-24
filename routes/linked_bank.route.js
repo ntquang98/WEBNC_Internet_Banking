@@ -105,6 +105,8 @@ router.post('/account', fullCheck, async (req, res) => {
       data: { account_value: req.body.data.amount }
     });
 
+    // luu du lieu giao dich lai
+
     let updateResult = {
       success: true,
       timestamp: moment().unix(),
