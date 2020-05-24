@@ -64,7 +64,7 @@ router.get('/account', slimCheck, async (req, res) => {
       }
     });
     let ret = {
-      username: result.attribute_data[0].username
+      username: result.attribute_data[0].user_name
     }
 
     return res.status(200).send(ret);
