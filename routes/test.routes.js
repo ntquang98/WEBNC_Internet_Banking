@@ -21,8 +21,7 @@ router.get('/account', (req, res) => {
             hash: crypto.createHash('sha256').update(timestamp + _data + security_key).digest('hex')
         }
     }).then(function (response) {
-        console.log("RESPONSE: ", response);
-        res.send(response);
+        res.send(response.data);
     }).catch(err => res.send(err));
 });
 
@@ -34,9 +33,12 @@ router.post('/account', async (req, res) => {
     let timestamp = moment().unix();
     let security_key = "test1";
     let _data = JSON.stringify(data, null, 2);
+
+    // lấy private key RSA để ký, mấy bạn làm theo cách của mấy bạn
     let bank = await find({ security_key });
     let { private_key } = bank.attribute_data[0];
     private_key = private_key.replace(/\\n/g, '\n');
+
     try {
         let result = await axios({
             method: 'post',
