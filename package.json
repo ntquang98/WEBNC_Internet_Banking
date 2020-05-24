@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/ntquang98/WEBNC_Internet_Banking#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "eslint": "^7.0.0",
