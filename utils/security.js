@@ -1,7 +1,5 @@
-const dataConfig = require('../config/default.json');
 const moment = require('moment');
 const crypto = require('crypto');
-const openpgp = require('openpgp');
 const Bank = require('./bank');
 const db = require('./db');
 
@@ -33,10 +31,7 @@ module.exports = {
 
   verifySignature: async (data, signature, publicKey, signatureEncode, publicKeyType) => {
     let _data = JSON.stringify(data, null, 2)
-    if (publicKeyType === 'rsa') {
-      return verifyRSA(_data, signature, signatureEncode, publicKey);
-    }
-    return await verifyPGP(_data, signature, publicKey);
+    return verifyRSA(_data, signature, signatureEncode, publicKey);
   },
 
   encrypt: async (data, encodeType, privateKey, signature_format) => {
@@ -54,11 +49,3 @@ const verifyRSA = (data, signature, encodeType, publicKey) => {
   return ver;
 }
 
-const verifyPGP = async (data, signature, publicKey) => {
-  const verifier = await openpgp.verify({
-    message: openpgp.cleartext.fromText(data),
-    signature: openpgp.signature.readArmored(signature),
-    publicKeys: (await openpgp.key.readArmored(publicKey)).keys
-  });
-  return verifier.signatures[0];
-}

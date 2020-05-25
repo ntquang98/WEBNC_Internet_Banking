@@ -35,23 +35,6 @@ router.post('/', async (req, res) => {
   }
 });
 
-// find info
-/**
- * req
- *  header:{
- *    timestamp: 
- *    security_key:
- * },
- * body: {
- *    data: {
- *      "account_number":"",
- *      "amount": 1000000  
- *    },
- *    hash: "",
- *    signature:
- * }
- */
-
 router.get('/account', slimCheck, async (req, res) => {
   try {
     let result = await api_query.query({
