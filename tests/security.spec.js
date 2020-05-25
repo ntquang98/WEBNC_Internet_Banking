@@ -69,13 +69,13 @@ describe("verifyRSA", () => {
     let partner = await checkPartner(req.header.secret_key);
     expect(partner).toBeTruthy();
 
-    let { public_key, encode_type, signature_encode_type, encrypt_type } = partner.attribute_data[0];
+    let { public_key_rsa, encode_type, signature_encode_type, encrypt_type } = partner.attribute_data[0];
     let isNew = isNewPackage(req.header.timestamp);
     expect(isNew).toBe(true);
     let isOrigin = isOriginPackage(req.body.data, req.header.timestamp, req.body.hash, req.header.secret_key, encode_type);
     expect(isOrigin).toBe(true);
 
-    public_key = public_key.replace(/\\n/g, '\n');
+    let public_key = public_key_rsa.replace(/\\n/g, '\n');
     let valid = await verifySignature(req.body.data, req.body.signature, public_key, signature_encode_type, encrypt_type);
     expect(valid).toBe(true);
   });
