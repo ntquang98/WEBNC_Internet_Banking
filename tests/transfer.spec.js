@@ -40,8 +40,8 @@ describe('Get Should Success', () => {
     let security_key = "test1";
     let _data = JSON.stringify(data, null, 2);
     let bank = await find({ security_key });
-    let { private_key_rsa } = bank.attribute_data[0];
-    let private_key = private_key_rsa.replace(/\\n/g, '\n');
+    let { private_key } = bank.attribute_data[0];
+    private_key = private_key.replace(/\\n/g, '\n');
     try {
       let res = await request(app)
         .post('/api/v1/linked/account')
