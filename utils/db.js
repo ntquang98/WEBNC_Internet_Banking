@@ -81,7 +81,11 @@ module.exports = {
     model.findOneAndUpdate(query, { $inc: data })
       .exec()
       .then(data => {
-        resolve({ success: true, data });
+        if (data) {
+          resolve({ success: true, data });
+        } else {
+          reject({ success: false });
+        }
       })
       .catch(error => {
         reject({ success: false, error_msgs: error });

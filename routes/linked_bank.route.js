@@ -91,7 +91,7 @@ router.post('/account', fullCheck, async (req, res) => {
     // luu du lieu giao dich lai
 
     let updateResult = {
-      success: true,
+      success: result.success,
       timestamp: moment().unix(),
       data: req.body.data
     }

@@ -7,7 +7,7 @@ app.use(express.json());
 let uri;
 uri = process.env.Mongo_URI_TEST;
 
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
   .then(data => {
     // do not thing
   })
