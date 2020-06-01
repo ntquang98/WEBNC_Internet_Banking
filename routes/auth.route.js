@@ -57,7 +57,8 @@ route.post('/:user_role', validate('login'), async (req, res) => {
 });
 
 route.get('/refresh', async (req, res) => {
-  const { access_token, refresh_token } = req.headers;
+  const access_token = req.headers['x-access-token'];
+  const refresh_token = req.headers['x-refresh-token'];
   jwt.verify(access_token, config.auth.secret, { ignoreExpiration: true }, async (error, payload) => {
     if (error) {
       res.status(400).send("Invalid access token");

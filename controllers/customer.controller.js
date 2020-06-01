@@ -13,11 +13,19 @@ module.exports = {
     try {
       const options = { session };
       const user = await User(new_user).save(options);
+      if (!user) {
+        throw { success: false, error: { message: "can not create user" } };
+      }
       const account = await Account({
         account_number: generateAccountNumber(),
         account_type: 'deposit',
         user_id: user._id
       }).save(options);
+      if (!account) {
+        throw { success: false, error: { message: "can not create account" } };
+      }
+      //throw Error("test loi");
+      // TEST ok
       const updateUser = await User.findOneAndUpdate({ _id: user._id }, { $push: { accounts: account._id } }, options);
       await session.commitTransaction();
       session.endSession();

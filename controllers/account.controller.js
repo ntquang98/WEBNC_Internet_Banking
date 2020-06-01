@@ -109,6 +109,7 @@ module.exports = {
         { $inc: { amount: -amount_dec } },
         options
       );
+      // TODO: test rollback
       let transaction_number = generateTransactionNumber();
       let transaction = {
         transaction_number,

@@ -4,8 +4,9 @@ const createError = require('http-errors');
 const AccountController = require('../controllers/account.controller');
 
 router.get('/accounts', async (req, res) => {
-  let { user_id } = req.headers;
+  //let { user_id } = req.headers;
   // tạm thời giả định user_id nằm trong header, khi có auth sẽ được giải mã từ jwt
+  let { user_id } = req.tokenPayload;
   try {
     let accounts = await AccountController.getAllAccount(user_id);
     res.status(200).send(accounts);

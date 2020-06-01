@@ -25,6 +25,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useFind
     console.log("database connection failed")
   });
 
+const verifyAuth = require('./middlewares/auth.middleware');
+
 app.get('/', (req, res) => {
   res.status(200).json({ message: "Hello Hooman!!!" });
 });
@@ -40,6 +42,7 @@ app.use(`/test`, require('./routes/test.routes'));
 app.use('/auth', require('./routes/auth.route'));
 app.use('/employee', require('./routes/employee.route'));
 app.use('/customer', require('./routes/customer.route'));
+app.use('/admin', require('./routes/admin.route'));
 
 
 app.use((req, res, next) => {
@@ -49,7 +52,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.log(err.stack);
   const statusCode = err.status || 500;
-  res.status(statusCode).send({ "message": err.error.message });
+  res.status(statusCode).send(err.message);
 });
 
 const PORT = process.env.PORT || 3000;

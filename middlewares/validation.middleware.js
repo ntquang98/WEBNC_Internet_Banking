@@ -20,5 +20,11 @@ exports.validate = (method) => {
           .exists().withMessage('password bị thiếu')
       ]
     }
+    case 'create_user': {
+      return [
+        body('user_name', 'user_name is missing').exists(),
+        body('password').isLength({ min: 5 }).withMessage('password phải dài ít nhất 5 kí tự')
+      ];
+    }
   }
 }
