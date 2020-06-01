@@ -1,9 +1,9 @@
 
 module.exports = {
-  insert: ({ model: model, data: data }) => new Promise(async (resolve, reject) => {
+  insert: ({ model: model, data: data }) => new Promise((resolve, reject) => {
     model.collection.insertMany(data)
       .then(data => {
-        resolve({ success: true })
+        resolve({ success: true, id: data._id });
       })
       .catch(err => {
         reject({ success: false, error_msgs: err })

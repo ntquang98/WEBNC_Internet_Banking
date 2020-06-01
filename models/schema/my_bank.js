@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
-
+// FIXME: sửa lại một số trường ở database
 let my_bank = new mongoose.Schema({
   bank_name: String,
-  public_key: String,
-  private_key: String,
+  public_key_rsa: String,
+  private_key_rsa: String,
+  public_key_pgp: String,
+  private_key_pgp: String,
   key_length: Number,
   crypt_type: String,
   secret_key: String,
-  public_key_pgp: String,
-  private_key_pgp: String,
-  passphrase: String
+  pgp_passphrase: String
 });
 
 

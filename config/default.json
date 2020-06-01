@@ -3,10 +3,11 @@
     "url": "..."
   },
   "auth": {
-    "secret": "secretKey"
+    "secret": "secretKey",
+    "expiresIn": "1d",
+    "refreshTokenSz": 80
   },
-  "partner": [
-    {
+  "partner": [{
       "partnerId": "01",
       "partnerName": "Ngân hàng 1",
       "securityKey": "NH1Security",

@@ -1,8 +1,8 @@
 /* eslint-disable vars-on-top */
 const db = require('../utils/db');
-const User = require('../utils/user');
-const Account = require('../utils/account');
-const Tranfer_history = require('../utils/tranfer_history');
+const User = require('./schema/user');
+const Account = require('./schema/account');
+const Tranfer_history = require('./schema/tranfer_history');
 
 function onDataHandle({ data: data }) {
     return { input: data.input, output: data.output }

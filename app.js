@@ -30,11 +30,17 @@ app.get('/', (req, res) => {
 });
 
 app.use(`/api/v1/linked`, require('./routes/linked_bank.route'));
+
 app.use(`/user`, require('./routes/api_route'));
 app.use(`/account`, require('./routes/api_route'));
 app.use(`/tranfer_history`, require('./routes/api_route'));
 app.use(`/query`, require('./routes/api_query'))
 app.use(`/test`, require('./routes/test.routes'));
+
+app.use('/auth', require('./routes/auth.route'));
+app.use('/employee', require('./routes/employee.route'));
+app.use('/customer', require('./routes/customer.route'));
+
 
 app.use((req, res, next) => {
   res.status(404).send('Not found');
@@ -43,7 +49,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.log(err.stack);
   const statusCode = err.status || 500;
-  res.status(statusCode).send({ "message": err.message });
+  res.status(statusCode).send({ "message": err.error.message });
 });
 
 const PORT = process.env.PORT || 3000;

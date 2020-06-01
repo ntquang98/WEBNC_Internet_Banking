@@ -1,6 +1,6 @@
 const db = require('../utils/db');
-const Bank = require('../utils/bank');
-const MyBank = require('../utils/my_bank');
+const Bank = require('./schema/bank');
+const MyBank = require('./schema/my_bank');
 
 module.exports = {
   insert: async (data) => {

@@ -1,6 +1,6 @@
 const moment = require('moment');
 const crypto = require('crypto');
-const Bank = require('./bank');
+const Bank = require('../models/schema/bank');
 const db = require('./db');
 
 module.exports = {

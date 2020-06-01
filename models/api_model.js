@@ -1,7 +1,7 @@
 const db = require('../utils/db');
-const User = require('../utils/user');
-const Account = require('../utils/account');
-const Tranfer_history = require('../utils/tranfer_history');
+const User = require('./schema/user');
+const Account = require('./schema/account');
+const Tranfer_history = require('./schema/tranfer_history');
 
 function getModel(model) {
   let MODEL = null;

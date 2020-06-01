@@ -7,6 +7,10 @@ const user = new mongoose.Schema({
     dob: { type: String },
     sub_user: { type: String },
     user_role: { type: String },
+    full_name: { type: String },
+    phone_number: { type: String },
+    receiver_list: { type: Array },
+    accounts: { type: Array },
     user_id: { type: String }
 })
 

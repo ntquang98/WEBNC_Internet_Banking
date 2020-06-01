@@ -5,7 +5,7 @@ const api_query = require('../models/api_query');
 const createError = require('http-errors');
 const { slimCheck, fullCheck } = require('../middlewares/security.middleware');
 const db = require('../utils/db');
-const Account = require('../utils/account');
+const Account = require('../models/schema/account');
 const security = require('../utils/security');
 const moment = require('moment');
 
