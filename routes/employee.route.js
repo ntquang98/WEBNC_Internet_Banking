@@ -7,7 +7,7 @@ const { validationResult } = require('express-validator');
 
 const CustomerController = require('../controllers/customer.controller')
 
-router.post('/create_customer', validate('create_customer'), async (req, res) => {
+router.post('/customers', validate('create_customer'), async (req, res) => {
   try {
     const errors = validationResult(req);
 

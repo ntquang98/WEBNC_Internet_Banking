@@ -6,7 +6,7 @@ const { validationResult } = require('express-validator');
 
 const UserController = require('../controllers/user.controller');
 
-route.post('/create_employee', validate('create_user'), async (req, res) => {
+route.post('/employees', validate('create_user'), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -29,7 +29,7 @@ route.post('/create_employee', validate('create_user'), async (req, res) => {
   }
 });
 
-route.post('/create_admin', validate('create_user'), async (req, res) => {
+route.post('/admins', validate('create_user'), async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(400).send({ errors });
