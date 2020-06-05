@@ -16,6 +16,8 @@ router.post('/customers', validate('create_customer'), async (req, res) => {
       return;
     }
     let user = req.body;
+    user.user_role = "customer";
+    // TODO: Kiểm tra email có trùng không
     user.password = bcrypt.hashSync(req.body.password, 8);
     let ret = await CustomerController.create_customer(user);
     res.status(200).send(ret);

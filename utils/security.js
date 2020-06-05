@@ -39,7 +39,7 @@ module.exports = {
     const sign = crypto.createSign(encodeType);
     sign.update(_data);
     return sign.sign(privateKey, signature_format);
-  },
+  }
 };
 
 const verifyRSA = (data, signature, encodeType, publicKey) => {

@@ -59,29 +59,6 @@ router.get('/account', slimCheck, async (req, res) => {
 // send money
 router.post('/account', fullCheck, async (req, res) => {
   try {
-    /* let clientAccounts = await db.find({ model: Account, data: { account_number: req.body.data.account_number } });
-    let clientAccount = clientAccounts.attribute_data[0];
-    let { account_value, account_number } = clientAccount || {};
-
-    console.log('after update', clientAccount);
-
-    let amount = account_value + req.body.data.amount;
-
-    console.log('amount after update', amount);
-
-    let updateResult = await api_query.transfer({
-      data: {
-        input: [{
-          account_number: account_number,
-          account_value: amount
-        }],
-        output: [{
-          model: "account",
-          account_number: account_number
-        }]
-      }
-    }); */
-
     let result = await db.increaseField({
       model: Account,
       query: { account_number: req.body.data.account_number },

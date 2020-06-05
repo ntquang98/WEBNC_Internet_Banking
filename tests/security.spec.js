@@ -21,7 +21,7 @@ const createTestReq = async () => {
   let bank = await find({ security_key: secret_key });
   let { private_key, signature_encode_type, signature_format, encode_type } = bank.attribute_data[0];
   let hash = crypto.createHash(encode_type).update(timestamp + _data + secret_key).digest('hex');
-  private_key = private_key.replace(/\\n/g, '\n'); // FIXME: private key hay public key lay tu db len
+  private_key = private_key.replace(/\\n/g, '\n');
   let req = {
     header: {
       timestamp,

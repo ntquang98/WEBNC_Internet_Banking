@@ -40,9 +40,9 @@ app.use(`/query`, require('./routes/api_query'))
 app.use(`/test`, require('./routes/test.routes'));
 
 app.use('/auth', require('./routes/auth.route'));
-app.use('/employee', require('./routes/employee.route'));
-app.use('/customer', require('./routes/customer.route'));
-app.use('/admin', require('./routes/admin.route'));
+app.use('/employee', verifyAuth('employee'), require('./routes/employee.route'));
+app.use('/customer', verifyAuth('customer'), require('./routes/customer.route'));
+app.use('/admin', verifyAuth('admin'), require('./routes/admin.route'));
 
 
 app.use((req, res, next) => {

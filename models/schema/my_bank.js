@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// FIXME: sửa lại một số trường ở database
 let my_bank = new mongoose.Schema({
   bank_name: String,
   public_key_rsa: String,

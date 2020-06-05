@@ -2,34 +2,32 @@
   "mongodb": {
     "url": "..."
   },
+  "otp": {
+    "expiresIns": 300,
+    "secret": "quyenxinhdep",
+    "salt": "15102017",
+    "algorithm": "aes-192-cbc",
+    "keyLength": 24,
+    "ivLength": 16
+  },
   "auth": {
     "secret": "secretKey",
     "expiresIn": "1d",
     "refreshTokenSz": 80
   },
-  "partner": [{
-      "partnerId": "01",
-      "partnerName": "Ngân hàng 1",
-      "securityKey": "NH1Security",
-      "publicKey": "dawwwfalklmlawlfkw leflwffjwl kfjwejflkweflef",
-      "publicKeyType": "rsa",
-      "signatureEncode": "SHA256"
+  "account": [{
+      "username": "admin01",
+      "password": "password"
     },
     {
-      "partnerId": "02",
-      "partnerName": "Ngân hàng 2",
-      "securityKey": "kflwkemmcmwqpoqke",
-      "publicKey": "safdklw_wpofkf",
-      "publicKeyType": "gpg",
-      "signatureEncode": "SHA256"
+      "username": "ntquang98",
+      "password": "qq15102017",
+      "email": "aquarius.superstar@gmail.com"
     },
     {
-      "partnerId": "03",
-      "partnerName": "Ngân hàng 3",
-      "securityKey": "wadcmwejcjkjhw",
-      "publicKey": "wkskld;wkdkwpdpi-2o-=3239i09reu2e",
-      "publicKeyType": "rsa",
-      "signatureEncode": "SHA256"
+      "username": "employee01",
+      "password": "password"
     }
   ]
+
 }
