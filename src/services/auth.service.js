@@ -57,7 +57,7 @@ const refresh = async (accessToken, refreshToken) => {
     }
     const { user_id, user_role } = payload;
     try {
-      let useRefreshToken = await UseRefreshTokenExt.findOne({ user_id, refreshToken });
+      let useRefreshToken = await UseRefreshTokenExt.findOne({ user_id, refresh_token: refreshToken });
       if (!useRefreshToken) {
         throw createError(400, "Invalid refresh token");
       }

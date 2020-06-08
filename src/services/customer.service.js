@@ -250,16 +250,14 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
   try {
     console.log(receiver_account)
     const options = { session };
-    // findOne bug -> 2nd arg is protection not options ~~
     let account = await Account.findOne({ account_number: receiver_account, account_type: 'deposit' });
-    if (!receiver_info) {
+    if (!account) {
       throw createError(404, 'Account not found');
     }
     let receiver_info = await User.findById(account.user_id, null);
     if (!receiver_info) {
       throw createError(404, 'User not found');
     }
-    console.log("tim thay nguoi nhan")
     let reminder_name = name ? name : receiver_info.full_name;
     let save_receiver = {
       name: reminder_name,
@@ -267,9 +265,7 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
       account_number: receiver_account,
     }
     const receiver = await ReceiverList(save_receiver).save(options);
-    console.log("da them receiver");
     await User.findByIdAndUpdate(user_id, { $push: { receiver_list: receiver._id } }, options);
-    console.log('them nguoi nhan vao user');
     await session.commitTransaction();
     session.endSession();
     return receiver;
