@@ -10,7 +10,11 @@ let Transaction = new mongoose.Schema({
   description: String,
   day: Date,
   fee: Number,
-  transaction_type: String,
+  transaction_type: {
+    type: String,
+    enum: ['TRANSFER_MONEY', 'PAY_DEBT', 'SAVING', 'WITHDRAW'],
+    default: 'TRANSFER_MONEY'
+  },
 });
 
 module.exports = Transaction = mongoose.model('transaction', Transaction, 'transaction');

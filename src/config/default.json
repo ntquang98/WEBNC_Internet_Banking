@@ -15,6 +15,12 @@
     "expiresIn": "1d",
     "refreshTokenSz": 80
   },
+  "transaction_type": {
+    "transfer": "TRANSFER_MONEY",
+    "pay_debt": "PAY_DEBT",
+    "saving": "SAVING",
+    "withdraw": "WITHDRAW"
+  },
   "account": [{
       "username": "admin01",
       "password": "password"
