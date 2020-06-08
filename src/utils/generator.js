@@ -1,12 +1,18 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/default.json');
 const moment = require('moment');
+const util = require('util');
 
 module.exports = {
   generateAccessToken: payload => {
-    return jwt.sign(payload, config.auth.secret, {
-      expiresIn: config.auth.expiresIn
-    });
+    return new Promise((resolve, reject) => {
+      jwt.sign(payload, config.auth.secret, { expiresIn: config.auth.expiresIn }, (error, token) => {
+        if (error) {
+          return reject(error);
+        }
+        return resolve(token);
+      })
+    })
   },
   generateAccountNumber: _ => {
     const randomNumber = ~~(Math.random() * 15102017);

@@ -19,7 +19,7 @@ const login = async (user_name, password) => {
     let user = await User.findOne({ user_name });
     if (!user) throw createError[404];
     if (!bcrypt.compareSync(password, user.password)) throw createError[400];
-    const accessToken = generateAccessToken({ user_id: user._id, user_role: user.user_role });
+    const accessToken = await generateAccessToken({ user_id: user._id, user_role: user.user_role });
     const refreshToken = randToken.generate(config.auth.refreshTokenSz);
 
     let useRefreshToken = await UseRefreshTokenExt.find({ user_id: user._id });
@@ -51,7 +51,7 @@ const login = async (user_name, password) => {
 }
 
 const refresh = async (accessToken, refreshToken) => {
-  jwt.verify(accessToken, config.auth.secret, { ignoreExpiration: true }, async (error, payload) => {
+  return jwt.verify(accessToken, config.auth.secret, { ignoreExpiration: true }, async (error, payload) => {
     if (error) {
       throw createError(400, "Invalid access token");
     }
@@ -61,9 +61,9 @@ const refresh = async (accessToken, refreshToken) => {
       if (!useRefreshToken) {
         throw createError(400, "Invalid refresh token");
       }
-      const accessToken = generateAccessToken({ user_id, user_role });
+      const access_token = await generateAccessToken({ user_id, user_role });
       return {
-        accessToken,
+        accessToken: access_token,
       }
     } catch (error) {
       if (error.statusCode) throw error;
