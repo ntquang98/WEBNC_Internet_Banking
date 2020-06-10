@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 let DebtReminder = mongoose.Schema({
-  account_number: String,
+  owner_account_number: String, // tai khoan nguoi cho no
+  debtor_account_number: String,
   sender_id: mongoose.Schema.Types.ObjectId,
   receiver_id: mongoose.Schema.Types.ObjectId,
   amount: Number,

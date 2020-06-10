@@ -56,19 +56,23 @@ router.delete('/receivers/:receiver_id',
   customerController.deleteReceiver
 );
 
-router.get('/debt_lists',
+router.get('/debt_list',
   customerController.getAllDebtReminder
 );
 
-router.post('/debt_lists',
+router.post('/debt_list',
   validate('create_debt'),
   validateRequest,
   customerController.createDebtReminder
 );
 
-router.put('/debt_lists/:receiver_id',
-  customerController.deleteDebtReminder
+router.put('/debt_list/:reminder_id',
+  customerController.cancelDebtReminder
 );
+
+router.delete('debt_list/:reminder_id',
+  customerController.deleteDebtReminder
+)
 
 router.get('/customers/:account_number',
   customerController.getUserInfoByAccountNumber

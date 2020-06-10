@@ -5,7 +5,7 @@ const createEmployee = async (req, res, next) => {
     let result = adminService.createEmployee(req.body);
     res.status(200).send(result);
   } catch (error) {
-    throw (error);
+    next(error);
   }
 }
 
@@ -14,7 +14,7 @@ const createAdmin = async (req, res, next) => {
     let result = adminService.createAdmin(req.body);
     res.status(200).send(result);
   } catch (error) {
-    throw (error);
+    next(error);
   }
 }
 

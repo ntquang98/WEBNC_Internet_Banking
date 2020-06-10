@@ -2,8 +2,8 @@ const { checkPartner, isNewPackage, isOriginPackage, verifySignature } = require
 const createError = require('http-errors');
 
 const slimCheck = async (req, res, next) => {
-  let { timestamp, security_key } = req.headers;
-  let { data, hash } = req.body;
+  let { timestamp, security_key, hash } = req.headers;
+  let { data } = req.params;
 
   let partner = await checkPartner(security_key);
   if (partner) {
@@ -18,8 +18,8 @@ const slimCheck = async (req, res, next) => {
 }
 
 const fullCheck = async (req, res, next) => {
-  let { timestamp, security_key } = req.headers;
-  let { data, hash, signature } = req.body;
+  let { timestamp, security_key, hash } = req.headers;
+  let { data, signature } = req.body;
   let partner = await checkPartner(security_key);
   if (partner) {
     let { encode_type, public_key_rsa, encrypt_type, signature_encode_type } = partner.attribute_data[0];

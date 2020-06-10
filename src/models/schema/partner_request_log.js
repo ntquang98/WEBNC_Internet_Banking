@@ -3,9 +3,9 @@ let PartnerRequestLog = new mongoose.Schema({
   transaction_number: String,
   partner_name: String,
   request_uri: String,
-  request_header: String, // nên là String hay là để object
-  request_body: String,
-  request_time: Date,
+  request_header: Object, // nên là String hay là để object
+  request_body: Object,
+  request_time: Number, // timestamp
   signature: String,
   request_amount: Number
 });

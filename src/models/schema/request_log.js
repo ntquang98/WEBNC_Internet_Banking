@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 let RequestLog = mongoose.Schema({
   transaction_number: String,
   partner_name: String,
-  request_header: String,
-  request_body: String,
-  request_time: Date,
+  request_header: Object,
+  request_body: Object,
+  request_time: String,
   signature: String,
   request_amount: Number
 });

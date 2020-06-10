@@ -17,7 +17,7 @@ module.exports = (user_name, otp, operation) => {
       <p>Dear, ${user_name},</p>
       <p>This is your verification code for ${operation}.</p>
       <p class="code"><strong>${otp}</strong></p>
-      <p>This code will expire three minutes after this email was send.</p>
+      <p>This code will expire five minutes after this email was send.</p>
       <p><strong>Why you received this email</strong></p>
       <p>S2Q Bank requires verification whenever your bank account is doing importance operator such as:</p>
       <quote>transfer money, forgot password</quote>

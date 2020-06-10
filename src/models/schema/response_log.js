@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 let ResponseLog = mongoose.Schema({
   transaction_number: String,
   partner_name: String,
-  response_header: String,
-  response_body: String,
+  response_header: Object,
+  response_body: Object,
   response_time: Date,
   signature: String
 });

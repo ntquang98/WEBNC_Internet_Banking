@@ -12,8 +12,8 @@ let Transaction = new mongoose.Schema({
   fee: Number,
   transaction_type: {
     type: String,
-    enum: ['TRANSFER_MONEY', 'PAY_DEBT', 'SAVING', 'WITHDRAW'],
-    default: 'TRANSFER_MONEY'
+    enum: ['TRANSFER', 'PAY_DEBT', 'SAVING', 'WITHDRAW'],
+    default: 'TRANSFER'
   },
 });
 

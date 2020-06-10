@@ -14,9 +14,9 @@ const getAllAccount = async user_id => {
     if (accounts.length > 0) {
       return accounts;
     }
-    throw createError[404];
+    throw createError(404, 'Not found');
   } catch (error) {
-    throw createError[500];
+    throw createError(500, 'Server Errors');
   }
 }
 
@@ -24,14 +24,14 @@ const getOneAccountByAccountNumber = async account_number => {
   try {
     let account = await Account.findOne({ account_number });
     if (!account) {
-      throw createError[404];
+      throw createError(404, 'Can not find account');
     }
     return account;
   } catch (error) {
     if (error.status) {
       throw error;
     }
-    throw createError(500);
+    throw createError(500, 'Server Errors');
   }
 }
 
@@ -127,16 +127,29 @@ const getAllDebtReminder = async user_id => {
 }
 
 const createDebtReminder = async reminder => {
-  let { sender_id, receiver_id, amount, day, description } = reminder;
+  let { user_id, owner_account_number, debtor_account_number, amount, description } = reminder;
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
+    let day = moment(new Date()).format("DD-MM-YYYY HH:mm:ss");
     const options = { session };
-    const debt = await DebtReminder(reminder).save(options);
-    const sender = await User.findById(sender_id);
-    let content = `${sender.full_name} vừa gửi nhắc nợ với số tiền ${amount} tới cho bạn vào ${day}. ${description ? 'với nội dung' + description : ""}`;
+    const sender = await User.findById(user_id);
+    const receiver = await Account.findOne({ debtor_account_number });
+    let remind = {
+      owner_account_number,
+      debtor_account_number,
+      sender_id: user_id,
+      receiver_id: receiver.user_id,
+      amount,
+      description,
+      day,
+      is_done: false,
+      is_cancel: false,
+    }
+    const debt = await DebtReminder(remind).save(options);
+    let content = `${sender.full_name} vừa gửi nhắc nợ với số tiền ${amount} tới cho bạn vào ${day}. ${description ? 'với nội dung ' + description : ""}`;
     let notify = {
-      user_id: receiver_id,
+      user_id: receiver._id,
       content: content,
       type: 'REMINDER',
       create_at: moment().unix(),
@@ -153,11 +166,12 @@ const createDebtReminder = async reminder => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw createError[500];
+    if (error.status) throw error;
+    throw createError(500, 'Server Error', error);
   }
 }
 
-const deleteReminder = async (reminder_id, description) => {
+const cancelReminder = async (reminder_id, description) => {
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
@@ -184,6 +198,24 @@ const deleteReminder = async (reminder_id, description) => {
     await session.abortTransaction();
     session.endSession();
     throw createError[500];
+  }
+}
+
+const deleteReminder = async (reminder_id) => {
+  try {
+    let reminder = await DebtReminder.findById(reminder_id);
+    if (!reminder) {
+      throw createError(404, 'Can not find reminder');
+    }
+    if (!reminder.is_done || !reminder.is_cancel) {
+      await DebtReminder.findByIdAndDelete(reminder_id);
+      return {
+        ok: true
+      }
+    }
+    throw createError(400, 'Can not delete this reminder');
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -305,6 +337,7 @@ module.exports = {
   changeAccountName,
   getAllDebtReminder,
   createDebtReminder,
+  cancelReminder,
   deleteReminder,
   getAllReceiverOfUser,
   getReceiverById,

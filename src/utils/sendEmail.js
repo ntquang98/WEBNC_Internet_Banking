@@ -1,5 +1,6 @@
 const mailTransporter = require('./mail');
 const mailContent = require('./mailContent');
+const createError = require('http-errors');
 
 const sendEmail = async (otp, user, operation, subject) => {
   const { full_name, email } = user;
@@ -13,7 +14,7 @@ const sendEmail = async (otp, user, operation, subject) => {
   try {
     await mailTransporter.sendMail(mailOptions);
   } catch (error) {
-    throw error;
+    throw createError(500, 'Server Errors');
   }
 };
 

@@ -22,6 +22,8 @@ app.use('/auth', require('./routes/auth.route'));
 app.use('/employee', verifyAuth('employee'), require('./routes/employee.route'));
 app.use('/customer', verifyAuth('customer'), require('./routes/customer.route'));
 app.use('/admin', verifyAuth('admin'), require('./routes/admin.route'));
+app.use('/transaction', verifyAuth('customer'), require('./routes/transaction.route'));
+app.use('/public', require('./routes/public.route'));
 
 app.use((req, res, next) => {
   res.status(404).send('Not found');

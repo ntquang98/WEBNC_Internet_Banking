@@ -14,6 +14,7 @@ const refresh = async (req, res, next) => {
     let accessToken = req.headers['x-access-token'];
     let refreshToken = req.headers['x-refresh-token'];
     let result = await authService.refresh(accessToken, refreshToken);
+    console.log('result', result)
     res.status(200).send(result);
   } catch (error) {
     next(error);

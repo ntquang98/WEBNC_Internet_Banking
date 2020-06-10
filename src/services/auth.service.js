@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const moment = require('moment');
 
 const sendEmail = require('../utils/sendEmail');
-const { generateOTP } = require('../utils/generator');
+const { generateOneTimePassword } = require('../utils/generator');
 
 const { generateAccessToken } = require('../utils/generator');
 
@@ -74,19 +74,20 @@ const refresh = async (accessToken, refreshToken) => {
 
 const sendOTP = async (email, operation, mail_subject) => {
   try {
-    let OTP = generateOTP(6);
-    let exp = moment().unix() + 180;
+    let OTP = generateOneTimePassword(6);
+    let exp = moment().unix() + 300;
     let user = await User.findOneAndUpdate({ email }, {
       otp: OTP,
       otp_exp: exp
     });
+    console.log('user', user)
     if (!user) {
-      throw createError[404];
+      throw createError(404, 'Can not find User');
     }
     await sendEmail(OTP, user, operation, mail_subject);
   } catch (error) {
     if (error.status)
-      throw createError[404];
+      throw error;
     throw createError[500];
   }
 }

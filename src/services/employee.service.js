@@ -3,6 +3,7 @@ const Account = require('../models/schema/account');
 const { generateAccountNumber } = require('../utils/generator');
 const createError = require('http-errors');
 const bcrypt = require('bcryptjs');
+const transactionService = require('./transaction.service');
 
 const createCustomer = async newUser => {
   newUser.user_role = 'customer';
@@ -16,7 +17,7 @@ const createCustomer = async newUser => {
     });
     if (oldUser) {
       // this email is used;
-      throw createError[400];
+      throw createError(400, 'This email have been used');
     }
     const user = await User(newUser).save(options);
     if (!user) {
@@ -42,10 +43,60 @@ const createCustomer = async newUser => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw createError[500];
+    if (error.status) throw error;
+    throw createError(500, 'Server Errors');
+  }
+}
+
+const sendMoneyToCustomerAccount = async (account_number, amount) => {
+  try {
+    let transaction = {
+      src_acc: 'S2Q',
+      src_bank: 'S2Q Bank',
+      des_acc: account_number,
+      amount,
+      type: 'TRANSFER',
+      description: 'Nạp tiền tại quầy giao dịch',
+    }
+    let ret = transactionService.sendMoneyToAccount(transaction);
+    return ret;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getUserInformation = async email => {
+  try {
+    let user = await User.findOne({ email });
+    if (!user) {
+      throw createError(404, 'Not find user');
+    }
+    let accounts = await Account.find({ _id: { $in: user.accounts } }).toArray();
+    return {
+      info: {
+        user_name: user.user_name,
+        full_name: user.full_name,
+        phone_number: user.phone_number,
+      },
+      accounts
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getAccountTransactionHistories = async account_number => {
+  try {
+    let ret = transactionService.getTransactionHistory(account_number);
+    return ret;
+  } catch (error) {
+    throw error;
   }
 }
 
 module.exports = {
   createCustomer,
+  sendMoneyToCustomerAccount,
+  getUserInformation,
+  getAccountTransactionHistories
 }

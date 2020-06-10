@@ -4,7 +4,7 @@ module.exports = (URL, method, headers, data) => {
   return axios({
     method,
     url: URL,
-    headers,
-    data
+    headers: headers,
+    data: data
   });
 };

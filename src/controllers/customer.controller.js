@@ -1,4 +1,5 @@
 const customerService = require('../services/customer.service');
+const partnerService = require('../services/partner.service');
 
 const getAllAccount = async (req, res, next) => {
   let { user_id } = req.tokenPayload;
@@ -95,7 +96,10 @@ const createReceiver = async (req, res, next) => {
   try {
     let receiver;
     if (bank === 'S2Q Bank') {
+      console.log('create inner receiver')
       receiver = await customerService.createInnerReceiver(user_id, account_number, name);
+    } else {
+
     }
     res.status(201).send(receiver);
   } catch (error) {
@@ -114,7 +118,24 @@ const getAllDebtReminder = async (req, res, next) => {
 }
 const createDebtReminder = async (req, res, next) => {
   try {
-    let rs = await customerService.createDebtReminder(req.body);
+    let { user_id } = req.tokenPayload;
+    let reminder = {
+      user_id,
+      owner_account_number: req.body.account_number,
+      debtor_account_number: req.body.account_number,
+      description: req.body.description,
+      amount: req.body.amount
+    }
+    let rs = await customerService.createDebtReminder(reminder);
+    res.status(200).send(rs);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const cancelDebtReminder = async (req, res, next) => {
+  try {
+    let rs = await customerService.cancelReminder(req.params.receiver_id, req.body.description);
     res.status(200).send(rs);
   } catch (error) {
     next(error);
@@ -123,8 +144,8 @@ const createDebtReminder = async (req, res, next) => {
 
 const deleteDebtReminder = async (req, res, next) => {
   try {
-    let rs = await customerService.deleteReminder(req.params.receiver_id, req.body.description);
-    res.status(200).send(rs);
+    let ret = await customerService.deleteDebtReminder(req.params.reminder_id);
+    res.status(200).send(ret);
   } catch (error) {
     next(error);
   }
@@ -132,8 +153,13 @@ const deleteDebtReminder = async (req, res, next) => {
 
 const getUserInfoByAccountNumber = async (req, res, next) => {
   let { account_number } = req.params;
+  let { bank } = req.query;
   try {
-    let user = await customerService.getUserInfoByAccountNumber(account_number);
+    let user = bank ?
+      bank === 'S2Q Bank' ?
+        await customerService.getUserInfoByAccountNumber(account_number) :
+        await partnerService.requestInfoPartnerBank(account_number, bank) :
+      await customerService.getUserInfoByAccountNumber(account_number);
     res.status(200).send(user);
   } catch (error) {
     next(error);
@@ -158,8 +184,9 @@ module.exports = {
   deleteReceiver,
   createReceiver,
   createDebtReminder,
-  deleteDebtReminder,
+  cancelDebtReminder,
   getAllDebtReminder,
+  deleteDebtReminder,
   getUserInfoByAccountNumber,
 }
 

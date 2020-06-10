@@ -29,8 +29,6 @@ module.exports = (method) => {
     case 'create_debt': {
       return [
         body('account_number').exists(),
-        body('sender_id').exists(),
-        body('receiver_id').exists(),
         body('amount').exists()
       ]
     }
@@ -44,7 +42,6 @@ module.exports = (method) => {
       ]
     case 'createReceiver':
       return [
-        body('name').exists(),
         body('account_number').exists(),
         body('bank').exists(),
       ]
@@ -54,5 +51,15 @@ module.exports = (method) => {
         body('OTP').exists(),
         body('password').exists().isLength({ min: 5 })
       ]
+    case 'makeTransaction':
+      return [
+        body('source_account').exists(),
+        body('destination_account').exists(),
+        body('source_bank').exists(),
+        body('destination_bank').exists(),
+        body('isFeePayBySender').exists(),
+        body('fee').exists(),
+        body('OTP').isLength({ min: 6, max: 6 }),
+      ];
   }
 }

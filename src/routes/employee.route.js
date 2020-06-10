@@ -10,4 +10,16 @@ router.post('/customers',
   employeeController.createCustomer
 );
 
+router.get('/customers',
+  employeeController.getUserInfo
+);
+
+router.get('/accounts/histories/:account_number',
+  employeeController.getAccountTransactionHistories
+);
+
+router.post('/accounts/:account_number',
+  employeeController.sendMoney
+)
+
 module.exports = router;
