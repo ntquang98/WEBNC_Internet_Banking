@@ -1,3 +1,5 @@
+import { logger } from '../utils/mail';
+
 const mongoose = require('mongoose');
 
 class ConnectDatabase {
@@ -7,7 +9,13 @@ class ConnectDatabase {
     mongoose.set('useNewUrlParser', true);
     mongoose.set('useUnifiedTopology', true);
     mongoose.set('useFindAndModify', false);
-    mongoose.connect(url);
+    mongoose.connect(url, (error) => {
+      if (error) {
+        console.error('Mongodb connection error: ' + error);
+      } else {
+        console.log('mongodb connected')
+      }
+    });
   }
 }
 

@@ -11,7 +11,7 @@ router.get('/:account_number',
   publicController.sendUserInfo
 );
 
-router.post('/:account_number',
+router.post('/transfer',
   fullCheck,
   publicController.validateRequestFromPartner,
   publicController.handleRequestFromPartner

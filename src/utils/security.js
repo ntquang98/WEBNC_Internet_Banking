@@ -23,29 +23,24 @@ module.exports = {
   },
 
   isOriginPackage: (data, timestamp, sig, securityKey, encodeType) => {
-    let _data = JSON.stringify(data, null, 2);
+    let _data = JSON.stringify(data);
     let hash = crypto.createHash(encodeType).update(timestamp + _data + securityKey).digest('hex');
     return sig == hash;
 
   },
 
-  verifySignature: async (data, signature, publicKey, signatureEncode, publicKeyType) => {
-    let _data = JSON.stringify(data, null, 2)
-    return verifyRSA(_data, signature, signatureEncode, publicKey);
+  verifySignature: (data, signature, publicKey) => {
+    let _data = JSON.stringify(data);
+    let verifier = crypto.createVerify('sha256');
+    verifier.update(_data);
+    return verifier.verify(publicKey, signature, 'hex');
   },
 
-  encrypt: async (data, encodeType, privateKey, signature_format) => {
+  encrypt: (data, encodeType, privateKey, signature_format) => {
     const _data = JSON.stringify(data, null, 2);
     const sign = crypto.createSign(encodeType);
     sign.update(_data);
     return sign.sign(privateKey, signature_format);
   }
 };
-
-const verifyRSA = (data, signature, encodeType, publicKey) => {
-  let verifier = crypto.createVerify(encodeType);
-  verifier.update(data);
-  let ver = verifier.verify(publicKey, signature, 'hex');
-  return ver;
-}
 

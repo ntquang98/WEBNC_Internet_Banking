@@ -311,10 +311,14 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       transaction_type: type
     };
     await Transaction(new_transaction).save(options);
-    let notifies = _getTransferNotification(receiver, amount_inc, new_transaction.day, description);
     let myBank = await MyBank.findOne({ bank_name: 'S2Q Bank' });
-    let private_key = myBank.private_key.replace(/\\n/g, '\n');
-    let sig = await security.encrypt(new_transaction, 'sha256', private_key, 'hex');
+    let private_key = myBank.private_key_rsa.replace(/\\n/g, '\n');
+    let sig = security.encrypt(new_transaction, 'sha256', private_key, 'hex');
+
+    let ret = {
+      data: new_transaction,
+      signature: sig
+    }
 
     let req = {
       transaction_number,
@@ -325,12 +329,8 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       signature,
       request_amount: amount_inc
     }
+    let new_req = await RequestLog(req).save(options);
 
-    let ret = {
-      data: new_transaction,
-      signature: sig
-    }
-    await RequestLog(req).save(options);
     let res = {
       transaction_number,
       partner_name: src_bank,
@@ -338,16 +338,21 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       response_time: new_transaction.day,
       signature: sig
     }
-    await ResponseLog(res).options(options);
+    let new_res = await ResponseLog(res).save(options);
 
+    console.log(new_req, new_res);
+
+    let notifies = _getTransferNotification(receiver, amount_inc, new_transaction.day, description);
     await Notification.insertMany(notifies);
+
     await session.commitTransaction();
+    session.endSession();
     return ret;
   } catch (error) {
+    console.log(error)
     await session.abortTransaction();
-    throw createError(500, 'Server Errors');
-  } finally {
     session.endSession();
+    throw createError(500, 'Server Errors');
   }
 }
 
