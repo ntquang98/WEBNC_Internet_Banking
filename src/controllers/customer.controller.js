@@ -166,6 +166,15 @@ const getUserInfoByAccountNumber = async (req, res, next) => {
   }
 }
 
+const getAllBankName = async (req, res, next) => {
+  try {
+    let result = await customerService.getAllBankName();
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 /** TODO:
  * Thanh toan no
  * Chuyen khoan
@@ -188,5 +197,6 @@ module.exports = {
   getAllDebtReminder,
   deleteDebtReminder,
   getUserInfoByAccountNumber,
+  getAllBankName,
 }
 
