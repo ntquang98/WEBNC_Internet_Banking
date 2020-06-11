@@ -1,0 +1,8 @@
+{
+  "url": "https://nklbank.herokuapp.com/api/partnerbank/request",
+  "partnerCode": "ccQ8SCo7jaJIsphleBkn",
+  "passphrase": "S2QBank",
+  "secret_key": "s2qbanking",
+  "email": "info@s2q-ibank.com",
+  "privateKeyArmored": "-----BEGIN PGP PRIVATE KEY BLOCK-----\nVersion: OpenPGP.js v4.10.4\nComment: https://openpgpjs.org\n\nxYYEXsx/txYJKwYBBAHaRw8BAQdATEOObz/yGkg+mEe22ro6gz8Cw4anGaYZ\nimhBB665tiP+CQMIpDw1JulmWKvgInxQBbOfcZ/6mVWFjZdpNZdimWYrt7Qa\n7OSffWJR9O4DR47X4o61fOUQedDt8Tcu4396oeLZ3CZQu5uJ5zer5VhxmUfQ\nf80cUzJRQmFuayA8aW5mb0BzMnEtaWJhbmsuY29tPsJ4BBAWCgAgBQJezH+3\nBgsJBwgDAgQVCAoCBBYCAQACGQECGwMCHgEACgkQ6/VZuEjzBn3yVwEA2YAq\nvqb4rGXRiQR4Y8hnKm2/V0DE8z7/ti7F7csX/XsBAIZU8h+/VrgjQW8f9oPs\nRyqC/uHe46HmppIrgkMPtsQDx4sEXsx/txIKKwYBBAGXVQEFAQEHQJbmM0ye\nTOIo8wY5/L5c98Re5BpxU8wyJXKzZVplznl/AwEIB/4JAwgZNopXq68CfOCf\nEMH2TMxJxlkCz4RFrXYxCzefG2rI3WscVW5Vd4I2V33mKF6tCbIQE+nb6PwW\nbc1Vpnp4rcqV3dz74JaZvXxlAR+mwcfLwmEEGBYIAAkFAl7Mf7cCGwwACgkQ\n6/VZuEjzBn3WogD8DkmSqCl+AOgyCSLZkS5ECP5d6SGs1Pclr5faSFrjqAcA\n/1NUueSpYqXjtEdKIELPScLPFyLymv85J245XdQGj7sC\n=V0gS\n-----END PGP PRIVATE KEY BLOCK-----"
+}
