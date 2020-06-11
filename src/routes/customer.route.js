@@ -78,4 +78,8 @@ router.get('/customers/:account_number',
   customerController.getUserInfoByAccountNumber
 )
 
+router.get('/banks',
+  customerController.getAllBankName
+)
+
 module.exports = router;

@@ -3,6 +3,8 @@ const User = require('../models/schema/user');
 const DebtReminder = require('../models/schema/debt_reminder');
 const Notification = require('../models/schema/notification');
 const ReceiverList = require('../models/schema/receiver_list');
+const Bank = require('../models/schema/bank');
+
 const moment = require('moment');
 const createError = require('http-errors');
 
@@ -329,6 +331,18 @@ const getUserInfoByAccountNumber = async account_number => {
   }
 }
 
+const getAllBankName = async _ => {
+  try {
+    let banks = await Bank.find({});
+    return banks.map(item => ({
+      _id: item._id,
+      bank_name: item.bank_name,
+    }));
+  } catch (error) {
+    throw createError(500, error);
+  }
+}
+
 module.exports = {
   getAllAccount,
   getOneAccountByAccountNumber,
@@ -345,4 +359,5 @@ module.exports = {
   deleteReceiver,
   createInnerReceiver,
   getUserInfoByAccountNumber,
+  getAllBankName,
 }
