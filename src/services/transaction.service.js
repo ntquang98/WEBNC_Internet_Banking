@@ -290,13 +290,16 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
   session.startTransaction();
   try {
     const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
-    const options = { session };
+    const options = { session }
     let amount_inc = feePayBySender ? amount : amount - fee;
     let receiver = await Account.findOneAndUpdate(
       { account_number: des_acc },
       { $inc: { amount: amount_inc } },
       options
     );
+    if (!receiver) {
+      throw createError(404, 'Can not find account number');
+    }
     let transaction_number = generateTransactionNumber();
     let new_transaction = {
       transaction_number,

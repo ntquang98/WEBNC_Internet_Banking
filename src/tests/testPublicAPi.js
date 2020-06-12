@@ -2,7 +2,6 @@ const moment = require('moment');
 const crypto = require('crypto');
 const axios = require('axios');
 const Bank = require('../models/schema/bank');
-const { send } = require('process');
 //TODO: Lam cai nay ngay
 /**
  * request info
@@ -40,7 +39,7 @@ const getInfo = async (account_number) => {
   }
 }
 
-//getInfo('1601399422');
+getInfo('1601399422');
 // POST /public/transfer
 /**
  * 
@@ -87,4 +86,4 @@ const sendMoney = async (account_number, amount) => {
   }
 }
 
-sendMoney('1601399422', 10000);
+sendMoney('1596891106', 10000);

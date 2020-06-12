@@ -5,7 +5,6 @@ const publicController = require('../controllers/public.controller');
 
 const router = require('express').Router();
 
-// TODO: lam client test request from partner
 router.get('/:account_number',
   slimCheck,
   publicController.sendUserInfo
