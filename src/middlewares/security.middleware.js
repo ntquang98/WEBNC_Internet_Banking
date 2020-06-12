@@ -27,6 +27,7 @@ const fullCheck = async (req, res, next) => {
   if (partner) {
     let { encode_type, public_key_rsa } = partner.attribute_data[0];
     let public_key = public_key_rsa.replace(/\\n/g, '\n');
+    console.log(public_key)
     if (isNewPackage(timestamp) &&
       isOriginPackage(data, timestamp, hash, security_key, encode_type) &&
       verifySignature(data, signature, public_key)) {

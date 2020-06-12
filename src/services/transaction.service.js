@@ -343,7 +343,6 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
     }
     let new_res = await ResponseLog(res).save(options);
 
-    console.log(new_req, new_res);
 
     let notifies = _getTransferNotification(receiver, amount_inc, new_transaction.day, description);
     await Notification.insertMany(notifies);
@@ -352,9 +351,9 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
     session.endSession();
     return ret;
   } catch (error) {
-    console.log(error)
     await session.abortTransaction();
     session.endSession();
+    if (error.status) throw error;
     throw createError(500, 'Server Errors');
   }
 }
