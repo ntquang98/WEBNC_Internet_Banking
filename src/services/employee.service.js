@@ -13,11 +13,11 @@ const createCustomer = async newUser => {
   try {
     const options = { session };
     const oldUser = await User.findOne({
-      email: newUser.email
+      user_name: newUser.user_name
     });
     if (oldUser) {
-      // this email is used;
-      throw createError(400, 'This email have been used');
+      // this user is used;
+      throw createError(400, 'This username have been used');
     }
     const user = await User(newUser).save(options);
     if (!user) {

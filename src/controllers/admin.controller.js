@@ -2,7 +2,7 @@ const adminService = require('../services/admin.service');
 
 const createEmployee = async (req, res, next) => {
   try {
-    let result = adminService.createEmployee(req.body);
+    let result = await adminService.createEmployee(req.body);
     res.status(200).send(result);
   } catch (error) {
     next(error);
@@ -11,7 +11,7 @@ const createEmployee = async (req, res, next) => {
 
 const createAdmin = async (req, res, next) => {
   try {
-    let result = adminService.createAdmin(req.body);
+    let result = await adminService.createAdmin(req.body);
     res.status(200).send(result);
   } catch (error) {
     next(error);

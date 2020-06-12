@@ -7,21 +7,31 @@ const employeeService = require('./employee.service');
 
 const createEmployee = async user => {
   try {
+    let check = await User.findOne({ user_name: user.user_name });
+    if (check) {
+      throw createError(400, 'Username is already used');
+    }
     user.password = bcrypt.hashSync(user.password, 8);
     user.user_role = 'employee';
     let employee = await User(user).save();
+    console.log(employee);
     return {
       success: true,
       user_id: employee._id,
       user_name: employee.user_name,
     }
   } catch (error) {
+    if (error.status) throw error;
     throw createError[500];
   }
 }
 
 const createAdmin = async user => {
   try {
+    let check = await User.findOne({ user_name: user.user_name });
+    if (check) {
+      throw createError(400, 'Username is already used');
+    }
     user.password = bcrypt.hashSync(user.password, 8);
     user.user_role = 'admin';
     let admin = await User(user).save();
@@ -31,7 +41,8 @@ const createAdmin = async user => {
       user_name: admin.user_name,
     };
   } catch (error) {
-    throw createError[500];
+    if (error.status) throw error;
+    throw createError(500, 'Server Error');
   }
 }
 
