@@ -309,11 +309,12 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       des_bank,
       amount,
       description,
-      day: moment(new Date()).format("DD-MM-YYYY HH:mm:ss"),
+      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
       fee,
       transaction_type: type
     };
     await Transaction(new_transaction).save(options);
+    console.log('im here')
     let myBank = await MyBank.findOne({ bank_name: 'S2Q Bank' });
     let private_key = myBank.private_key_rsa.replace(/\\n/g, '\n');
     let sig = security.encrypt(new_transaction, 'sha256', private_key, 'hex');
@@ -343,7 +344,6 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
     }
     let new_res = await ResponseLog(res).save(options);
 
-
     let notifies = _getTransferNotification(receiver, amount_inc, new_transaction.day, description);
     await Notification.insertMany(notifies);
 
@@ -351,6 +351,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
     session.endSession();
     return ret;
   } catch (error) {
+    console.log(error)
     await session.abortTransaction();
     session.endSession();
     if (error.status) throw error;
