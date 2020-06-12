@@ -7,7 +7,7 @@ const slimCheck = async (req, res, next) => {
 
   let partner = await checkPartner(security_key);
   if (partner) {
-    let { encode_type } = partner.attribute_data[0];
+    let { encode_type } = partner;
     if (isNewPackage(timestamp) &&
       isOriginPackage(account_number, timestamp, hash, security_key, encode_type)) {
       next();
@@ -22,10 +22,11 @@ const slimCheck = async (req, res, next) => {
 const fullCheck = async (req, res, next) => {
   let { timestamp, security_key, hash } = req.headers;
   let { data, signature } = req.body;
-  let partner = await checkPartner(security_key);
+  let sourceBankName = data.source_bank
+  let partner = await checkPartner(security_key, sourceBankName);
 
   if (partner) {
-    let { encode_type, public_key_rsa } = partner.attribute_data[0];
+    let { encode_type, public_key_rsa } = partner;
     let public_key = public_key_rsa.replace(/\\n/g, '\n');
     console.log(public_key)
     if (isNewPackage(timestamp) &&

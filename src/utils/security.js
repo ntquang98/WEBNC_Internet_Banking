@@ -4,10 +4,16 @@ const Bank = require('../models/schema/bank');
 const db = require('./db');
 
 module.exports = {
-  checkPartner: async (securityKey) => {
+  checkPartner: async (securityKey, bankName = null) => {
     if (securityKey) {
       try {
-        let partner = await db.find({ model: Bank, data: { security_key: securityKey } });
+        let partner = bankName ?
+          await Bank.findOne({ security_key: securityKey, bank_name: bankName }) :
+          await Bank.findOne({ security_key: securityKey });
+
+        /* let partner = bankName ?
+          await db.find({ model: Bank, data: { security_key: securityKey, bank_name: bankName } }) :
+          await db.find({ model: Bank, data: { security_key: securityKey } }); */
         if (partner) {
           return partner;
         }
