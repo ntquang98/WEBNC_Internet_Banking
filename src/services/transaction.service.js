@@ -54,7 +54,7 @@ const sendMoneyToAccount = async (transaction) => {
       des_bank,
       amount,
       description: description,
-      day: moment(new Date()).format("DD-MM-YYYY HH:mm:ss"),
+      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
       fee: 0,
       transaction_type: type
     };
@@ -103,7 +103,7 @@ const _doingInnerTransfer = async (transaction, options) => {
       des_bank,
       amount,
       description: transaction.description,
-      day: moment(new Date()).format("DD-MM-YYYY HH:mm:ss"),
+      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
       fee,
       transaction_type: type
     };
@@ -145,7 +145,7 @@ const _doingOuterTransfer = async (transaction, options) => {
       des_bank,
       amount,
       description: transaction.description,
-      day: moment(new Date()).format("DD-MM-YYYY HH:mm:ss"),
+      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
       fee,
       transaction_type: type
     };

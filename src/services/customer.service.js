@@ -133,7 +133,7 @@ const createDebtReminder = async reminder => {
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
-    let day = moment(new Date()).format("DD-MM-YYYY HH:mm:ss");
+    let day = moment(new Date()).format("MM-DD-YYYY HH:mm:ss");
     const options = { session };
     const sender = await User.findById(user_id);
     const receiver = await Account.findOne({ account_number: debtor_account_number });

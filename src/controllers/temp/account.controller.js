@@ -117,7 +117,7 @@ module.exports = {
         des_bank,
         amount,
         description: transaction.description,
-        day: moment(new Date()).format("DD-MM-YYYY HH:mm:ss"),
+        day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
         fee,
         transaction_type: transaction.type
       };
