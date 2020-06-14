@@ -136,7 +136,7 @@ const createDebtReminder = async reminder => {
     let day = moment(new Date()).format("DD-MM-YYYY HH:mm:ss");
     const options = { session };
     const sender = await User.findById(user_id);
-    const receiver = await Account.findOne({ debtor_account_number });
+    const receiver = await Account.findOne({ account_number: debtor_account_number });
     let remind = {
       owner_account_number,
       debtor_account_number,
@@ -151,7 +151,7 @@ const createDebtReminder = async reminder => {
     const debt = await DebtReminder(remind).save(options);
     let content = `${sender.full_name} vừa gửi nhắc nợ với số tiền ${amount} tới cho bạn vào ${day}. ${description ? 'với nội dung ' + description : ""}`;
     let notify = {
-      user_id: receiver._id,
+      user_id: receiver.user_id,
       content: content,
       type: 'REMINDER',
       create_at: moment().unix(),
