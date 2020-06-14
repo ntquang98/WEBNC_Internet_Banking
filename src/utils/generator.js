@@ -32,5 +32,23 @@ module.exports = {
       OTP += digits[~~(Math.random() * 10)];
     }
     return OTP;
+  },
+
+  generateUserName: () => {
+    const pattern = 'QWERTYUIOPASDFGHJKLZXCVBNM0123456789';
+    let username = '';
+    for (let i = 0; i < 8; i++) {
+      username += pattern[~~(Math.random() * pattern.length)];
+    }
+    return 'UN' + username;
+  },
+
+  generatePassword: () => {
+    const pattern = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+      password += pattern[~~(Math.random() * pattern.length)];
+    }
+    return password;
   }
 }

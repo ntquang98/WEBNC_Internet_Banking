@@ -1,36 +1,51 @@
 const User = require('../models/schema/user');
 const Account = require('../models/schema/account');
-const { generateAccountNumber } = require('../utils/generator');
+const generator = require('../utils/generator');
 const createError = require('http-errors');
 const bcrypt = require('bcryptjs');
 const transactionService = require('./transaction.service');
 
-const createCustomer = async newUser => {
-  newUser.user_role = 'customer';
-  newUser.password = bcrypt.hashSync(newUser.password, 8);
+const createCustomer = async info => {
+  let {
+    full_name,
+    email,
+    phone
+  } = info;
+  let password = generator.generatePassword();
+  let username = generator.generateUserName();
+
+  let new_user = {
+    username,
+    password: bcrypt.hashSync(password, 8),
+    full_name,
+    email,
+    phone,
+    user_role: 'customer'
+  }
+
   const session = await User.startSession();
   session.startTransaction();
   try {
     const options = { session };
     const oldUser = await User.findOne({
-      user_name: newUser.user_name
+      email
     });
     if (oldUser) {
       // this user is used;
-      throw createError(400, 'This username have been used');
+      throw createError(400, 'This email have been used');
     }
-    const user = await User(newUser).save(options);
+    const user = await User(new_user).save(options);
     if (!user) {
-      throw createError[404];
+      throw createError(422, 'Can not create user account');
     }
     const account = await Account({
-      account_number: generateAccountNumber(),
+      account_number: generator.generateAccountNumber(),
       account_type: 'deposit',
       user_id: user._id
     }).save(options);
 
     if (!account) {
-      throw createError[422];
+      throw createError(422, 'can not create user account');
     }
     const updateUser = await User.findOneAndUpdate({ _id: user._id }, { $push: { accounts: account._id } }, options);
     await session.commitTransaction();
@@ -38,6 +53,7 @@ const createCustomer = async newUser => {
     return {
       success: true,
       user_id: user._id,
+      user: new_user,
       account_number: account.account_number
     }
   } catch (error) {
