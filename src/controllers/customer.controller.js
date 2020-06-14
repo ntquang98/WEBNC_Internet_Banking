@@ -121,8 +121,8 @@ const createDebtReminder = async (req, res, next) => {
     let { user_id } = req.tokenPayload;
     let reminder = {
       user_id,
-      owner_account_number: req.body.account_number,
-      debtor_account_number: req.body.account_number,
+      owner_account_number: req.body.src_account_number,
+      debtor_account_number: req.body.des_account_number,
       description: req.body.description,
       amount: req.body.amount
     }

@@ -27,7 +27,7 @@ app.use('/transaction', verifyAuth('customer'), require('./routes/transaction.ro
 app.use('/public', require('./routes/public.route'));
 
 app.use((req, res, next) => {
-  res.status(404).send('Not found');
+  res.status(404).send('Not found this route. Not Implemented');
 });
 
 app.use((err, req, res, next) => {

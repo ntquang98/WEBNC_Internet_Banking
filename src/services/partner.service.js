@@ -115,20 +115,24 @@ const requestInfoPartnerBank = async (account_number, bank_name) => {
   }
 }
 
-const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name) => {
+const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee) => {
   try {
     switch (bank_name) {
       case 'NKLBank': {
+        if (!feePayBySender) amount_money -= fee;
         let data = {
           transaction_type: '+',
           target_account,
           source_account,
-          amount_money
+          amount_money,
+          note: description,
+          charge_include: !feePayBySender
         };
         return await _requestNKLBank(data);
       }
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }

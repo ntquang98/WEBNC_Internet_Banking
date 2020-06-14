@@ -122,7 +122,7 @@ const _doingInnerTransfer = async (transaction, options) => {
 }
 
 const _doingOuterTransfer = async (transaction, options) => {
-  const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type } = transaction;
+  const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
   let amount_inc = feePayBySender ? amount : amount - fee;
   let amount_dec = feePayBySender ? amount + fee : amount;
   try {
@@ -135,7 +135,7 @@ const _doingOuterTransfer = async (transaction, options) => {
       { $inc: { amount: -amount_dec } },
       options
     );
-    let { request, response } = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank);
+    let { request, response } = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee);
     let transaction_number = generateTransactionNumber();
     let new_transaction = {
       transaction_number,
@@ -216,6 +216,7 @@ const requestTransaction = async (user_id) => {
   try {
     let user = await User.findById(user_id);
     if (!user) throw createError(404, 'Can not find User');
+
     await AuthService.sendOTP(user.email, "Transaction", "Verification transfer operation");
 
     return {
@@ -361,18 +362,16 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
 
 const getTransactionHistory = async account_number => {
   try {
-    let receiver_money = await Transaction.find({ des_acc: account_number, type: 'TRANSFER' });
+    /* let receiver_money = await Transaction.find({ des_acc: account_number, type: 'TRANSFER' });
     let send_money = await Transaction.find({ src_acc: account_number, type: 'TRANSFER' });
     let saving = await Transaction.find({ src_acc: account_number, type: 'SAVING' });
     let withdraw_from_save = await Transaction.find({ des_acc: account_number, type: 'WITHDRAW' });
-    let pay_debt = await Transaction.find({ src_acc: account_number, type: 'PAY_DEBT' });
-    return {
-      receiver_money,
-      send_money,
-      saving,
-      withdraw_from_save,
-      pay_debt
-    }
+    let pay_debt = await Transaction.find({ src_acc: account_number, type: 'PAY_DEBT' }); */
+    let histories = await Transaction.find().or([
+      { src_number: account_number },
+      { des_number: account_number }
+    ]);
+    return histories.reverse(); // order new -> old
   } catch (error) {
     throw createError(500, 'Server Errors');
   }

@@ -17,8 +17,8 @@ const { generateAccessToken } = require('../utils/generator');
 const login = async (user_name, password) => {
   try {
     let user = await User.findOne({ user_name });
-    if (!user) throw createError[404];
-    if (!bcrypt.compareSync(password, user.password)) throw createError[400];
+    if (!user) throw createError(404, 'can not find user');
+    if (!bcrypt.compareSync(password, user.password)) throw createError(400, 'password not match');
     const accessToken = await generateAccessToken({ user_id: user._id, user_role: user.user_role });
     const refreshToken = randToken.generate(config.auth.refreshTokenSz);
 
@@ -88,7 +88,7 @@ const sendOTP = async (email, operation, mail_subject) => {
   } catch (error) {
     if (error.status)
       throw error;
-    throw createError[500];
+    throw createError(500, 'Server Error');
   }
 }
 

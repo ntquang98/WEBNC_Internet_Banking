@@ -28,7 +28,9 @@ module.exports = (method) => {
     }
     case 'create_debt': {
       return [
-        body('account_number').exists(),
+        body('src_account_number').exists(),
+        body('des_account_number').exists(),
+        body('description').exists(),
         body('amount').exists()
       ]
     }
