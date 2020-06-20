@@ -54,7 +54,7 @@ const sendMoneyToAccount = async (transaction) => {
       des_bank,
       amount,
       description: description,
-      day: moment(new Date()).tz('Asia/Ho_Chi_Minh').format("MM-DD-YYYY HH:mm:ss"),
+      day: moment(new Date()).tz('Asia/Ho_Chi_Minh'),
       fee: 0,
       transaction_type: type
     };
