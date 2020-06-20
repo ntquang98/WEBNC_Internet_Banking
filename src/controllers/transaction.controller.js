@@ -13,7 +13,7 @@ const requestTransaction = async (req, res, next) => {
 const makeTransaction = async (req, res, next) => {
   try {
     let { user_id } = req.tokenPayload;
-    let { OTP, source_account, destination_account, destination_bank, amount, isFeePayBySender, fee, des_name } = req.body;
+    let { OTP, source_account, destination_account, destination_bank, amount, isFeePayBySender, fee, des_name, description } = req.body;
     let transaction = {
       feePayBySender: isFeePayBySender,
       amount,
@@ -23,7 +23,8 @@ const makeTransaction = async (req, res, next) => {
       src_bank: 'S2Q Bank',
       des_bank: destination_bank,
       type: 'TRANSFER',
-      toFullName: des_name
+      toFullName: des_name,
+      description
     };
 
     let result = await TransactionService.makeTransaction(OTP, user_id, transaction);
