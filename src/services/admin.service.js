@@ -1,9 +1,47 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/schema/user');
 const Account = require('../models/schema/account');
+
+const RequestLog = require('../models/schema/request_log');
+const ResponseLog = require('../models/schema/response_log');
+const PartnerRequestLog = require('../models/schema/partner_request_log');
+const PartnerResponseLog = require('../models/schema/partner_response_log');
+
 const createError = require('http-errors');
 
 const employeeService = require('./employee.service');
+
+const createCustomer = async newUser => {
+  try {
+    return await employeeService.createCustomer(newUser);
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getAllCustomer = async () => {
+  try {
+    let users = await User.find({ user_role: 'customer' });
+    return users;
+  } catch (error) {
+    throw createError(500, 'Server Error');
+  }
+}
+
+const deleteCustomer = async user_id => {
+  const session = await User.startSession();
+  session.startTransaction();
+  try {
+    let options = { session };
+    let result = await User.findByIdAndDelete(user_id, options);
+    await Account.remove({ _id: { $in: result.accounts } }, options);
+    return {
+      success: true
+    }
+  } catch (error) {
+    throw createError(500, 'Server Error');
+  }
+}
 
 const createEmployee = async user => {
   try {
@@ -23,6 +61,26 @@ const createEmployee = async user => {
   } catch (error) {
     if (error.status) throw error;
     throw createError[500];
+  }
+}
+
+const getAllEmployee = async () => {
+  try {
+    let users = await User.find({ user_role: 'employee' });
+    return users;
+  } catch (error) {
+    throw createError(500, 'Server Error');
+  }
+}
+
+const deleteEmployee = async user_id => {
+  try {
+    let deletedEmployee = await User.findByIdAndDelete(user_id);
+    return {
+      success: true
+    }
+  } catch (error) {
+    throw createError(500, 'Server Error');
   }
 }
 
@@ -46,37 +104,20 @@ const createAdmin = async user => {
   }
 }
 
-const createCustomer = async newUser => {
-  try {
-    return await employeeService.createCustomer(newUser);
-  } catch (error) {
-    throw error;
-  }
-}
+// xem lịch sử giao dịch với ngân hàng khác 
+/**
+ * Mặc định là hiển thị giao dịch trong tháng
+ * - Lấy ngày tháng hiện tại
+ * - Query các giao dịch tháng trùng.
+ * Chọn giao dịch theo tháng
+ * - lấy ngày tháng được truyền tới. 
+ * - Query các giao dịch phù hợp
+ * Trong khoản thời gian. 
+ * - filter giao dịch 
+ * 
+ * -> tạo các middleware filter cho dễ 
+ */
 
-const getAllCustomer = async () => {
-  try {
-    let users = await User.find();
-    return users;
-  } catch (error) {
-    throw createError(500, 'Server Error');
-  }
-}
-
-const deleteCustomer = async user_id => {
-  const session = await User.startSession();
-  session.startTransaction();
-  try {
-    let options = { session };
-    let result = await User.findByIdAndDelete(user_id, options);
-    await Account.remove({ _id: { $in: result.accounts } }, options);
-    return {
-      success: true
-    }
-  } catch (error) {
-    throw createError(500, 'Server Error');
-  }
-}
 
 module.exports = {
   createEmployee,

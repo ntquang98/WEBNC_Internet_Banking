@@ -54,7 +54,7 @@ const sendMoneyToAccount = async (transaction) => {
       des_bank,
       amount,
       description: description,
-      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
+      day: moment(new Date()).tz('Asia/Ho_Chi_Minh').format("MM-DD-YYYY HH:mm:ss"),
       fee: 0,
       transaction_type: type
     };
@@ -73,7 +73,7 @@ const sendMoneyToAccount = async (transaction) => {
 
 const _doingInnerTransfer = async (transaction, options) => {
   try {
-    const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type } = transaction;
+    const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
     let amount_inc = feePayBySender ? amount : amount - fee;
     let amount_dec = feePayBySender ? amount + fee : amount;
     console.log(amount_inc, amount_dec, feePayBySender);
@@ -102,8 +102,8 @@ const _doingInnerTransfer = async (transaction, options) => {
       des_number: des_acc,
       des_bank,
       amount,
-      description: transaction.description,
-      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
+      description: description,
+      day: moment(new Date()).tz('Asia/Ho_Chi_Minh'),
       fee,
       transaction_type: type
     };
@@ -121,8 +121,9 @@ const _doingInnerTransfer = async (transaction, options) => {
   }
 }
 
+// FIXME: cấu trúc lại params
 const _doingOuterTransfer = async (transaction, options) => {
-  const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
+  const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description, toFullName, user_id } = transaction;
   let amount_inc = feePayBySender ? amount : amount - fee;
   let amount_dec = feePayBySender ? amount + fee : amount;
   try {
@@ -135,7 +136,7 @@ const _doingOuterTransfer = async (transaction, options) => {
       { $inc: { amount: -amount_dec } },
       options
     );
-    let { request, response } = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee);
+    let { request, response } = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee, toFullName, user_id);
     let transaction_number = generateTransactionNumber();
     let new_transaction = {
       transaction_number,
@@ -145,7 +146,7 @@ const _doingOuterTransfer = async (transaction, options) => {
       des_bank,
       amount,
       description: transaction.description,
-      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
+      day: moment(new Date()).tz('Asia/Ho_Chi_Minh'),
       fee,
       transaction_type: type
     };
@@ -238,6 +239,7 @@ const makeTransaction = async (OTP, user_id, transaction) => {
     if (OTP) {
       await _checkOTPOfUser(OTP, user_id, options);
     }
+    transaction.user_id = user_id;
     let trans = transaction.des_bank === 'S2Q Bank' ?
       await _doingInnerTransfer(transaction, options) :
       await _doingOuterTransfer(transaction, options);
@@ -310,7 +312,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       des_bank,
       amount,
       description,
-      day: moment(new Date()).format("MM-DD-YYYY HH:mm:ss"),
+      day: moment(new Date()).tz('Asia/Ho_Chi_Minh'),
       fee,
       transaction_type: type
     };

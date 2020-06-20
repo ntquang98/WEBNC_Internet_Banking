@@ -15,39 +15,8 @@ const {
 } = require('../config/nklbankconfig.json');
 
 const createError = require('http-errors');
-/**
-     * {
-     *    info: {
-     *       msg: 'abcdef',
-     *       ret: {
-     *          fieldCount: 0,
-     *          affectedRows: 1,
-     *          insertId: 0,
-     *          serverStatus: 34,
-     *          warningCount: 0,
-     *          message: '(Rows matched: 1  Changed: 1  Warnings: 0',
-     *          protocol41: true,
-     *          changedRows: 1
-     *       }
-     *    },
-     *    sign: '\r\n' +
-     *      '-----BEGIN PGP SIGNED MESSAGE-----\r\n' +
-     *      'Hash: SHA512\r\n' +
-     *      '\r\n' +
-     *      '{"msg":"Transaction succeeded. Online contract stored with keyID = ebf559b848f3067d","ret":{"fieldCount":0,"affectedRows":1,"insertId":0,"serverStatus":34,"warningCount":0,"message":"(Rows matched: 1  Changed: 1  Warnings: 0","protocol41":true,"changedRows":1}}\r\n' +
-     *      '-----BEGIN PGP SIGNATURE-----\r\n' +
-     *      'Version: OpenPGP.js v4.10.4\r\n' +
-     *      'Comment: https://openpgpjs.org\r\n' +
-     *      '\r\n' +
-     *      'wpwEAQEKAAYFAl7d3RkACgkQVY+hc4Qg8oItYQP/T2wixAdpmuRgCBBWU47X\r\n' +
-     *      '456zT3BtCKlLgF6JZ/1WHbFfrcrg5iBjrAi/Mp9xAf5+89YpPH+673yyFU8i\r\n' +
-     *      'o9YdPhrWa295shHhcxNNI9pGqPI4McmA0Yw5PB7nmv4vOa/L0Q9IGHDeUaOM\r\n' +
-     *      'SOqI417BFo+Cwh0bgF6jUP4+D2lRwwo=\r\n' +
-    *       '=LFh6\r\n' +
-     *      '-----END PGP SIGNATURE-----\r\n'
-     * }
-     */
-// data = { transaction_type: '+/-/?', source_account: '26348364', target_account: '87234934', amount_money: 293234424}
+
+const eightBank = require('./partner/eight.service');
 
 const _requestNKLBank = async (data) => {
   try {
@@ -93,7 +62,7 @@ const _requestNKLBank = async (data) => {
       signature: response.data.sign
     }
     console.log(response)
-    return response.data
+    return data.transaction_type === '?' ? response.data : { request, response: ret_response };
   } catch (error) {
     throw createError(error.response.status, error.response.message);
   }
@@ -102,23 +71,24 @@ const _requestNKLBank = async (data) => {
 const requestInfoPartnerBank = async (account_number, bank_name) => {
   try {
     switch (bank_name) {
-      case 'NKLBank': {
+      case 'NKLBank':
         let data = {
           transaction_type: '?',
           target_account: account_number
         };
         return await _requestNKLBank(data);
-      }
+      case 'Eight':
+        return await eightBank.requestInfo(account_number);
     }
   } catch (error) {
     throw error;
   }
 }
 
-const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee) => {
+const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee, toFullName = null, user_id) => {
   try {
     switch (bank_name) {
-      case 'NKLBank': {
+      case 'NKLBank':
         if (!feePayBySender) amount_money -= fee;
         let data = {
           transaction_type: '+',
@@ -129,6 +99,14 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           charge_include: !feePayBySender
         };
         return await _requestNKLBank(data);
+      case 'Eight': {
+        let transaction = {
+          src_acc: source_account,
+          des_acc: target_account,
+          amount: amount_money,
+          toFullName
+        }
+        return await eightBank.sendMoney(user_id, transaction);
       }
     }
   } catch (error) {
