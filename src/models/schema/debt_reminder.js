@@ -5,6 +5,8 @@ let DebtReminder = mongoose.Schema({
   debtor_account_number: String,
   sender_id: mongoose.Schema.Types.ObjectId,
   receiver_id: mongoose.Schema.Types.ObjectId,
+  sender_name: String,
+  receiver_name: String,
   amount: Number,
   description: String,
   day: Date,

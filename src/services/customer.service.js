@@ -117,7 +117,6 @@ const changeAccountName = async (account_number, account_name) => {
 
 const getAllDebtReminder = async user_id => {
   try {
-    // TODO: trả về tển user nhận gửi
     let debt = await DebtReminder.find({ receiver_id: user_id });
     let own = await DebtReminder.find({ sender_id: user_id });
     return {
@@ -134,15 +133,21 @@ const createDebtReminder = async reminder => {
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
-    let day = moment(new Date()).tz('Asia/Ho_Chi_Minh');
+    let day = new Date();
     const options = { session };
     const sender = await User.findById(user_id);
-    const receiver = await Account.findOne({ account_number: debtor_account_number });
+    if (!sender) throw createError(404, { message: "Cannot find User" });
+    const receiverAccount = await Account.findOne({ account_number: debtor_account_number });
+    const receiver = await User.findOne({ accounts: receiverAccount._id });
+    if (!receiver) throw createError(404, { message: "can not find user" });
+    //const receiver = await ;
     let remind = {
       owner_account_number,
       debtor_account_number,
       sender_id: user_id,
       receiver_id: receiver.user_id,
+      sender_name: sender.full_name,
+      receiver_name: receiver.full_name,
       amount,
       description,
       day,
