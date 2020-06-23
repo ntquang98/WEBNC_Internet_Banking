@@ -10,6 +10,8 @@ const createError = require('http-errors');
 
 const { generateAccountNumber } = require('../utils/generator');
 
+const bcrypt = require('bcryptjs');
+
 const getAllAccount = async user_id => {
   try {
     let accounts = await Account.find({ user_id });
@@ -140,7 +142,6 @@ const createDebtReminder = async reminder => {
     const receiverAccount = await Account.findOne({ account_number: debtor_account_number });
     const receiver = await User.findOne({ accounts: receiverAccount._id });
     if (!receiver) throw createError(404, { message: "can not find user" });
-    //const receiver = await ;
     let remind = {
       owner_account_number,
       debtor_account_number,
@@ -169,7 +170,7 @@ const createDebtReminder = async reminder => {
     session.endSession();
     return {
       success: true,
-      debt
+      debt,
     }
   } catch (error) {
     await session.abortTransaction();
@@ -184,7 +185,7 @@ const cancelReminder = async (reminder_id, description) => {
   session.startTransaction();
   try {
     const options = { session, new: true };
-    const debt = await DebtReminder.findByIdAndUpdate(reminder_id, { is_cancel: true, description });
+    const debt = await DebtReminder.findByIdAndUpdate(reminder_id, { is_cancel: true });
     const user = await User.findById(debt.receiver_id);
     let content = `${user.full_name} vừa hủy nhắc nợ với số tiền ${debt.amount} bạn gửi vào ${debt.day}.`
     let notify = {
@@ -205,7 +206,7 @@ const cancelReminder = async (reminder_id, description) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw createError[500];
+    throw createError(500, 'Server Error or Bad Coder');
   }
 }
 
@@ -349,6 +350,29 @@ const getAllBankName = async _ => {
   }
 }
 
+const changePassword = async (user_id, old, newPassword) => {
+  try {
+    let user = await User.findById(user_id);
+    if (!user) throw createError(404, 'can not find user');
+
+    if (!bcrypt.compareSync(old, user.password)) {
+      throw createError(400, 'Password is not correct');
+    }
+
+    const newpassword = bcrypt.hashSync(newPassword, 8);
+
+    await User.findByIdAndUpdate(user_id, { password: newpassword });
+    return {
+      success: true
+    }
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+// TODO: createOuterReceiver
+
 module.exports = {
   getAllAccount,
   getOneAccountByAccountNumber,
@@ -366,4 +390,5 @@ module.exports = {
   createInnerReceiver,
   getUserInfoByAccountNumber,
   getAllBankName,
+  changePassword,
 }

@@ -82,4 +82,9 @@ router.get('/banks',
   customerController.getAllBankName
 )
 
+router.post('/password',
+  customerController.changePassword
+)
+
 module.exports = router;
+

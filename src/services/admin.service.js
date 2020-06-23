@@ -21,7 +21,7 @@ const createCustomer = async newUser => {
 
 const getAllCustomer = async () => {
   try {
-    let users = await User.find({ user_role: 'customer' });
+    let users = await User.find({user_role: 'customer'});
     return users;
   } catch (error) {
     throw createError(500, 'Server Error');
@@ -32,9 +32,9 @@ const deleteCustomer = async user_id => {
   const session = await User.startSession();
   session.startTransaction();
   try {
-    let options = { session };
+    let options = {session};
     let result = await User.findByIdAndDelete(user_id, options);
-    await Account.remove({ _id: { $in: result.accounts } }, options);
+    await Account.remove({_id: {$in: result.accounts}}, options);
     return {
       success: true
     }
@@ -45,7 +45,7 @@ const deleteCustomer = async user_id => {
 
 const createEmployee = async user => {
   try {
-    let check = await User.findOne({ user_name: user.user_name });
+    let check = await User.findOne({user_name: user.user_name});
     if (check) {
       throw createError(400, 'Username is already used');
     }
@@ -66,7 +66,7 @@ const createEmployee = async user => {
 
 const getAllEmployee = async () => {
   try {
-    let users = await User.find({ user_role: 'employee' });
+    let users = await User.find({user_role: 'employee'});
     return users;
   } catch (error) {
     throw createError(500, 'Server Error');
@@ -77,7 +77,8 @@ const deleteEmployee = async user_id => {
   try {
     let deletedEmployee = await User.findByIdAndDelete(user_id);
     return {
-      success: true
+      success: true,
+      deleted: deletedEmployee
     }
   } catch (error) {
     throw createError(500, 'Server Error');
@@ -86,7 +87,7 @@ const deleteEmployee = async user_id => {
 
 const createAdmin = async user => {
   try {
-    let check = await User.findOne({ user_name: user.user_name });
+    let check = await User.findOne({user_name: user.user_name});
     if (check) {
       throw createError(400, 'Username is already used');
     }
@@ -104,18 +105,35 @@ const createAdmin = async user => {
   }
 }
 
-// xem lịch sử giao dịch với ngân hàng khác 
+const getAllAdmin = async _ => {
+  try {
+    let admins = await User.find({user_role: 'admin'});
+    return admins;
+  } catch (error) {
+    throw error;
+  }
+}
+
+//const getAllPartner = async _ => {
+//try {
+//let
+//} catch{
+
+//}
+//}
+
+// xem lịch sử giao dịch với ngân hàng khác
 /**
  * Mặc định là hiển thị giao dịch trong tháng
  * - Lấy ngày tháng hiện tại
  * - Query các giao dịch tháng trùng.
  * Chọn giao dịch theo tháng
- * - lấy ngày tháng được truyền tới. 
+ * - lấy ngày tháng được truyền tới.
  * - Query các giao dịch phù hợp
- * Trong khoản thời gian. 
- * - filter giao dịch 
- * 
- * -> tạo các middleware filter cho dễ 
+ * Trong khoản thời gian.
+ * - filter giao dịch
+ *
+ * -> tạo các middleware filter cho dễ
  */
 
 
@@ -125,4 +143,6 @@ module.exports = {
   createCustomer,
   getAllCustomer,
   deleteCustomer,
+  getAllEmployee,
+  deleteEmployee,
 }
