@@ -6,6 +6,9 @@ const CryptoJS = require('crypto-js');
 const moment = require('moment');
 const apiCaller = require('../utils/apiCaller');
 
+const ReceiverList = require('../models/schema/receiver_list');
+const User = require('../models/schema/user');
+
 const {
   url,
   partnerCode,
@@ -85,6 +88,28 @@ const requestInfoPartnerBank = async (account_number, bank_name) => {
   }
 }
 
+const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) => {
+  try {
+    let receiver = await requestInfoPartnerBank(account_number, bank);
+    if (!receiver) {
+      throw createError(404, 'Account not found');
+    }
+
+    let saveReceiver = {
+      name,
+      user_id,
+      account_number,
+      bank_name: bank
+    }
+
+    let ret = await ReceiverList(saveReceiver);
+    await User.findByIdAndUpdate(user_id, { $push: { receiver_list: ret._id } });
+    return ret;
+  } catch (error) {
+    throw createError(500, error);
+  }
+}
+
 const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee, toFullName = null, user_id) => {
   try {
     switch (bank_name) {
@@ -117,5 +142,6 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
 
 module.exports = {
   requestInfoPartnerBank,
-  sendMoneyToPartnerBank
+  sendMoneyToPartnerBank,
+  saveReceiverFromPartnerBank
 }
