@@ -17,4 +17,19 @@ route.post(
   adminController.createAdmin
 );
 
+route.post(
+  '/customers',
+  validate('create_customer'),
+  validateRequest,
+  adminController.createCustomer
+);
+
+route.get('/admins', adminController.getAllAdmin);
+route.get('/employees', adminController.getAllEmployee);
+route.get('/customers', adminController.getAllCustomer);
+
+route.delete('/employees/:user_id', adminController.deleteEmployee);
+route.delete('/customers/:user_id', adminController.deleteCustomer);
+
+
 module.exports = route;
