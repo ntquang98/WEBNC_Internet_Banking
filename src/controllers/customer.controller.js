@@ -145,7 +145,7 @@ const cancelDebtReminder = async (req, res, next) => {
 
 const deleteDebtReminder = async (req, res, next) => {
   try {
-    let ret = await customerService.deleteDebtReminder(req.params.reminder_id);
+    let ret = await customerService.deleteReminder(req.params.reminder_id);
     res.status(200).send(ret);
   } catch (error) {
     next(error);
