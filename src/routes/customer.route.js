@@ -70,7 +70,7 @@ router.put('/debt_list/:reminder_id',
   customerController.cancelDebtReminder
 );
 
-router.delete('debt_list/:reminder_id',
+router.delete('/debt_list/:reminder_id',
   customerController.deleteDebtReminder
 )
 
