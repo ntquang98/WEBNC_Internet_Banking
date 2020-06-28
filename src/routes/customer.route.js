@@ -60,7 +60,7 @@ router.get('/debt_list',
   customerController.getAllDebtReminder
 );
 
-router.post('/debt_list',
+router.push('/debt_list',
   validate('create_debt'),
   validateRequest,
   customerController.createDebtReminder
