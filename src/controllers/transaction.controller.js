@@ -1,4 +1,5 @@
 const TransactionService = require('../services/transaction.service');
+const transactionService = require('../services/transaction.service');
 
 const requestTransaction = async (req, res, next) => {
   let { user_id } = req.tokenPayload;
@@ -16,8 +17,8 @@ const makeTransaction = async (req, res, next) => {
     let { OTP, source_account, destination_account, destination_bank, amount, isFeePayBySender, fee, des_name, description } = req.body;
     let transaction = {
       feePayBySender: isFeePayBySender,
-      amount,
-      fee,
+      amount: parseInt(amount),
+      fee: parseInt(fee),
       src_acc: source_account,
       des_acc: destination_account,
       src_bank: 'S2Q Bank',
@@ -55,9 +56,33 @@ const getHistory = async (req, res, next) => {
   }
 }
 
+const save = async (req, res, next) => {
+  try {
+    let { user_id } = req.tokenPayload;
+    let { source_account, destination_account, amount } = req.body;
+    let result = await TransactionService.saveMoney(user_id, source_account, destination_account, amount);
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const withDraw = async (req, res, next) => {
+  try {
+    let { user_id } = req.tokenPayload;
+    let { source_account, destination_account, amount } = req.body;
+    let result = await transactionService.withDrawMoney(user_id, destination_account, source_account, amount);
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   requestTransaction,
   makeTransaction,
   getHistory,
-  payDebt
+  payDebt,
+  save,
+  withDraw
 }

@@ -22,4 +22,12 @@ router.get('/histories/:account_number',
   transactionController.getHistory
 );
 
+router.post('/save',
+  transactionController.save
+);
+
+router.post('/withdraw',
+  transactionController.withDraw
+);
+
 module.exports = router;

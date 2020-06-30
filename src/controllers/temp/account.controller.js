@@ -85,13 +85,7 @@ module.exports = {
     }
   },
   makeTransaction: async (transaction) => {
-    /** Chuyen tien trong ngan hang
-     * 1. Check ma OTP bên route
-     * 2. thêm tiền vào tài khoản đích
-     * 3. trừ tiền trong tài khoản nguồn
-     * 4. thêm mã transaction
-     * 5. thêm vào transaction
-     */
+
     const session = await Account.startSession();
     session.startTransaction();
     const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank } = transaction;
@@ -117,7 +111,7 @@ module.exports = {
         des_bank,
         amount,
         description: transaction.description,
-        day: moment(new Date()).tz('Asia/Ho_Chi_Minh'),
+        day: new Date(),
         fee,
         transaction_type: transaction.type
       };
