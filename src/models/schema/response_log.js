@@ -4,7 +4,7 @@ let ResponseLog = mongoose.Schema({
   partner_name: String,
   response_header: Object,
   response_body: Object,
-  response_time: Date,
+  response_time: Number,
   signature: String
 });
 

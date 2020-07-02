@@ -53,7 +53,7 @@ const sendMoneyToAccount = async (transaction) => {
       des_bank,
       amount,
       description: description,
-      day: new Date(),
+      day: Date.now(),
       fee: 0,
       transaction_type: type
     };
@@ -75,7 +75,6 @@ const _doingInnerTransfer = async (transaction, options) => {
     const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
     let amount_inc = feePayBySender ? amount : amount - fee;
     let amount_dec = feePayBySender ? amount + fee : amount;
-    console.log(amount_inc, amount_dec, feePayBySender);
     let user_send = await Account.findOne({ account_number: src_acc }, null, options);
     if (!user_send) {
       throw createError(404, 'Can not find user');
@@ -102,7 +101,7 @@ const _doingInnerTransfer = async (transaction, options) => {
       des_bank,
       amount,
       description: description,
-      day: new Date(),
+      day: Date.now(),
       fee,
       transaction_type: type
     };
@@ -125,7 +124,6 @@ const _doingOuterTransfer = async (transaction, options) => {
   let amount_dec = feePayBySender ? amount + fee : amount;
   try {
     let checkAccount = await Account.findOne({ account_number: src_acc });
-    console.log(amount_dec)
     if (checkAccount.amount < amount_dec) {
       throw createError(400, 'Account balance is not enough for transaction');
     }
@@ -144,7 +142,7 @@ const _doingOuterTransfer = async (transaction, options) => {
       des_bank,
       amount,
       description: transaction.description,
-      day: new Date(),
+      day: Date.now(),
       fee,
       transaction_type: type
     };
@@ -170,7 +168,7 @@ const _getTransferNotificationContent = (sender, receiver, amount, day, descript
     user_id: sender.user_id,
     content: senderContent,
     type: type,
-    create_at: new Date(),
+    create_at: Date.now(),
     is_hide: false,
     is_seen: false
   };
@@ -178,7 +176,7 @@ const _getTransferNotificationContent = (sender, receiver, amount, day, descript
     user_id: receiver.user_id,
     content: receiverContent,
     type: type,
-    create_at: new Date(),
+    create_at: Date.now(),
     is_hide: false,
     is_seen: false
   }
@@ -194,7 +192,7 @@ const _getTransferNotification = (receiver, amount, day, description, type) => {
     user_id: receiver.user_id,
     content: receiverContent,
     type: type,
-    create_at: new Date(),
+    create_at: Date.now(),
     is_hide: false,
     is_seen: false
   }
@@ -211,12 +209,11 @@ const _createNotification = async (sender, receiver, amount, day, description, t
 }
 
 const requestTransaction = async (user_id) => {
-  // Gui OTP
   try {
     let user = await User.findById(user_id);
     if (!user) throw createError(404, 'Can not find User');
 
-    await AuthService.sendOTP(user.email, "Transaction", "Verification transfer operation");
+    await AuthService.sendOTP(user_id, user.email, "Transaction", "Verification transfer operation");
 
     return {
       ok: true,
@@ -310,7 +307,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       des_bank,
       amount,
       description,
-      day: new Date(),
+      day: Date.now(),
       fee,
       transaction_type: type
     };
@@ -396,7 +393,7 @@ const saveMoney = async (user_id, account_number, save_account_number, amount) =
       des_bank: 'S2Q Bank',
       amount: amount,
       description: 'SAVING',
-      day: new Date(),
+      day: Date.now(),
       fee: 0,
       transaction_type: 'SAVING'
     };
@@ -408,7 +405,7 @@ const saveMoney = async (user_id, account_number, save_account_number, amount) =
       user_id: user_id,
       content: notifyContent,
       type: 'SAVING',
-      create_at: new Date(),
+      create_at: Date.now(),
       is_hide: false,
       is_seen: false
     }
@@ -454,7 +451,7 @@ const withDrawMoney = async (user_id, account_number, save_account_number, amoun
       des_bank: 'S2Q Bank',
       amount: amount,
       description: 'WITHDRAW',
-      day: new Date(),
+      day: Date.now(),
       fee: 0,
       transaction_type: 'WITHDRAW'
     };
@@ -466,7 +463,7 @@ const withDrawMoney = async (user_id, account_number, save_account_number, amoun
       user_id: user_id,
       content: notifyContent,
       type: 'WITHDRAW',
-      create_at: new Date(),
+      create_at: Date.now(),
       is_hide: false,
       is_seen: false
     }

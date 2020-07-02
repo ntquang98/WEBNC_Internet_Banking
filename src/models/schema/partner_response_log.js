@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 let PartnerResponseLog = mongoose.Schema({
   transaction_number: String,
   partner_name: String,
-  response_time: Date,
+  response_time: Number,
   response_header: Object,
   response_body: Object,
   signature: String

@@ -5,6 +5,7 @@ const requestTransaction = async (req, res, next) => {
   let { user_id } = req.tokenPayload;
   try {
     let ret = await TransactionService.requestTransaction(user_id);
+    console.log(user_id);
     res.status(200).send(ret);
   } catch (error) {
     next(error);

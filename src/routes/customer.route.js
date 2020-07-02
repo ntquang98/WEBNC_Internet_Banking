@@ -60,6 +60,9 @@ router.get('/debt_list',
   customerController.getAllDebtReminder
 );
 
+router.get('/debt_list/:reminder_id',
+  customerController.getDebtReminderById)
+
 router.post('/debt_list',
   validate('create_debt'),
   validateRequest,

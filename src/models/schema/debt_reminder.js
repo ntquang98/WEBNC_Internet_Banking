@@ -9,7 +9,7 @@ let DebtReminder = mongoose.Schema({
   receiver_name: String,
   amount: Number,
   description: String,
-  day: Date,
+  day: Number,
   is_done: Boolean,
   is_cancel: Boolean
 });

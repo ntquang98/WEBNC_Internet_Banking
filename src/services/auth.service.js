@@ -10,21 +10,21 @@ const bcrypt = require('bcryptjs');
 const moment = require('moment');
 
 const sendEmail = require('../utils/sendEmail');
-const {generateOneTimePassword} = require('../utils/generator');
+const { generateOneTimePassword } = require('../utils/generator');
 
-const {generateAccessToken} = require('../utils/generator');
+const { generateAccessToken } = require('../utils/generator');
 
 const login = async (user_name, password) => {
   try {
-    let user = await User.findOne({user_name});
+    let user = await User.findOne({ user_name });
     if (!user) throw createError(404, 'can not find user');
     if (!bcrypt.compareSync(password, user.password)) throw createError(400, 'password not match');
-    const accessToken = await generateAccessToken({user_id: user._id, user_role: user.user_role});
+    const accessToken = await generateAccessToken({ user_id: user._id, user_role: user.user_role });
     const refreshToken = randToken.generate(config.auth.refreshTokenSz);
 
-    let useRefreshToken = await UseRefreshTokenExt.find({user_id: user._id});
+    let useRefreshToken = await UseRefreshTokenExt.find({ user_id: user._id });
     if (useRefreshToken.length > 0) {
-      await UseRefreshTokenExt.findOneAndUpdate({user_id: user._id}, {refresh_token: refreshToken});
+      await UseRefreshTokenExt.findOneAndUpdate({ user_id: user._id }, { refresh_token: refreshToken });
     } else {
       await UseRefreshTokenExt({
         user_id: user._id,
@@ -51,17 +51,17 @@ const login = async (user_name, password) => {
 }
 
 const refresh = async (accessToken, refreshToken) => {
-  return jwt.verify(accessToken, config.auth.secret, {ignoreExpiration: true}, async (error, payload) => {
+  return jwt.verify(accessToken, config.auth.secret, { ignoreExpiration: true }, async (error, payload) => {
     if (error) {
       throw createError(400, "Invalid access token");
     }
-    const {user_id, user_role} = payload;
+    const { user_id, user_role } = payload;
     try {
-      let useRefreshToken = await UseRefreshTokenExt.findOne({user_id, refresh_token: refreshToken});
+      let useRefreshToken = await UseRefreshTokenExt.findOne({ user_id, refresh_token: refreshToken });
       if (!useRefreshToken) {
         throw createError(400, "Invalid refresh token");
       }
-      const access_token = await generateAccessToken({user_id, user_role});
+      const access_token = await generateAccessToken({ user_id, user_role });
       return {
         accessToken: access_token,
       }
@@ -72,15 +72,14 @@ const refresh = async (accessToken, refreshToken) => {
   });
 }
 
-const sendOTP = async (email, operation, mail_subject) => {
+const sendOTP = async (user_id, email, operation, mail_subject) => {
   try {
     let OTP = generateOneTimePassword(6);
     let exp = moment().unix() + 300;
-    let user = await User.findOneAndUpdate({email}, {
+    let user = await User.findOneAndUpdate({ _id: user_id, email: email }, {
       otp: OTP,
       otp_exp: exp
     });
-    console.log('user', user)
     if (!user) {
       throw createError(404, 'Can not find User');
     }
@@ -94,7 +93,7 @@ const sendOTP = async (email, operation, mail_subject) => {
 
 const resetPassword = async (email, OTP, newPassword) => {
   try {
-    let user = await User.findOne({email, otp: OTP});
+    let user = await User.findOne({ email, otp: OTP });
     if (!user) {
       throw createError(404);
     }

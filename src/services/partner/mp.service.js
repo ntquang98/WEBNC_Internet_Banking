@@ -41,13 +41,13 @@ const requestInfo = async account => {
 const sendMoney = async (user_id, transaction) => {
 
   try {
-    const mine = await MyBank.findOne({bank_name: 'S2Q Bank'});
+    const mine = await MyBank.findOne({ bank_name: 'S2Q Bank' });
     let ourPrivateKey = mine.private_key_pgp.replace(/\\n/g, '\n');
 
-    const {keys: [privateKey]} = await openpgp.key.readArmored(ourPrivateKey);
+    const { keys: [privateKey] } = await openpgp.key.readArmored(ourPrivateKey);
     await privateKey.decrypt(mine.pgp_passphrase);
 
-    const {signature: detachedSignature} = await openpgp.sign({
+    const { signature: detachedSignature } = await openpgp.sign({
       message: openpgp.cleartext.fromText('Nap tien'),
       privateKeys: [privateKey],
       detached: true
@@ -80,7 +80,7 @@ const sendMoney = async (user_id, transaction) => {
       request_uri: 'https://mpbinternetbanking.herokuapp.com/user/transferLinkBank',
       request_header: headers,
       request_body: data,
-      request_time: new Date(),
+      request_time: Date.now(),
       signature: mine.private_key_pgp,
       request_amount: transaction.amount
     }
@@ -94,7 +94,7 @@ const sendMoney = async (user_id, transaction) => {
 
     let ret_res = {
       partner_name: "MPBank",
-      response_time: new Date(),
+      response_time: Date.now(),
       response_header: response.headers,
       response_body: response.data,
       signature: response.data.result.signatureMBP

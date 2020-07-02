@@ -8,7 +8,7 @@ let Transaction = new mongoose.Schema({
   des_bank: String,
   amount: Number,
   description: String,
-  day: Date,
+  day: Number,
   fee: Number,
   transaction_type: {
     type: String,

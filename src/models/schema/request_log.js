@@ -5,7 +5,7 @@ let RequestLog = mongoose.Schema({
   partner_name: String,
   request_header: Object,
   request_body: Object,
-  request_time: String,
+  request_time: Number,
   signature: String,
   request_amount: Number
 });

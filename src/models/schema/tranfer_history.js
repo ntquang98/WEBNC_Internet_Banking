@@ -4,7 +4,7 @@ const tranfer_history = new mongoose.Schema({
     account_id: { type: String },
     des_account: { type: String },
     code: { type: String },
-    date: { type: String },
+    date: { type: Number },
     content: { type: String },
     status: { type: String }
 })

@@ -131,12 +131,35 @@ const getAllDebtReminder = async user_id => {
   }
 }
 
+const getDebtReminderById = async (user_id, reminder_id) => {
+  try {
+    console.log(reminder_id)
+    let debt = await DebtReminder.findById(reminder_id);
+    if (!debt) {
+      throw createError(404, 'Cannot find debt reminder');
+    }
+    if (debt.receiver_id == user_id) {
+      return {
+        debt: debt
+      }
+    } else if (debt.sender_id == user_id) {
+      return {
+        own: debt
+      }
+    } else {
+      throw createError(404, 'Not found debt reminder');
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
 const createDebtReminder = async reminder => {
   let { user_id, owner_account_number, debtor_account_number, amount, description } = reminder;
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
-    let day = new Date();
+    let day = Date.now();
     const options = { session };
     const sender = await User.findById(user_id);
     if (!sender) throw createError(404, { message: "Cannot find User" });
@@ -385,6 +408,7 @@ module.exports = {
   deleteAccount,
   changeAccountName,
   getAllDebtReminder,
+  getDebtReminderById,
   createDebtReminder,
   cancelReminder,
   deleteReminder,

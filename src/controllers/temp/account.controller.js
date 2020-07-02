@@ -111,7 +111,7 @@ module.exports = {
         des_bank,
         amount,
         description: transaction.description,
-        day: new Date(),
+        day: Date.now(),
         fee,
         transaction_type: transaction.type
       };

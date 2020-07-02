@@ -24,7 +24,7 @@ const _requestNKLBank = async (data) => {
   try {
     let timestamp = moment().toString();
     const hash = CryptoJS.AES.encrypt(
-      JSON.stringify({data, timestamp, secret_key}),
+      JSON.stringify({ data, timestamp, secret_key }),
       secret_key
     ).toString();
     const _headers = {
@@ -36,35 +36,35 @@ const _requestNKLBank = async (data) => {
     let signed_data = null;
 
     if (data.transaction_type === "+") {
-      const {keys: [privateKey]} = await openpgp.key.readArmored(privateKeyArmored);
+      const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
       await privateKey.decrypt(passphrase);
-      const {data: cleartext} = await openpgp.sign({
+      const { data: cleartext } = await openpgp.sign({
         message: openpgp.cleartext.fromText(JSON.stringify(data)), // CleartextMessage or Message object
         privateKeys: [privateKey], // for signing
       });
       signed_data = cleartext;
     }
 
-    let response = await apiCaller(url, 'POST', _headers, {data, signed_data});
+    let response = await apiCaller(url, 'POST', _headers, { data, signed_data });
 
     let request = {
       partner_name: 'NKL Bank',
       request_uri: url,
       request_headers: _headers,
       request_body: JSON.stringify(data),
-      request_time: new Date(),
+      request_time: Date.now(),
       signature: signed_data,
       request_amount: data.amount_money,
     }
     let ret_response = {
       partner_name: 'NKL Bank',
-      response_time: new Date(),
+      response_time: Date.now(),
       response_header: response._headers,
       response_body: response.data.info,
       signature: response.data.sign
     }
     console.log(response)
-    return data.transaction_type === '?' ? response.data : {request, response: ret_response};
+    return data.transaction_type === '?' ? response.data : { request, response: ret_response };
   } catch (error) {
     throw createError(error.response.status, error.response.message);
   }
@@ -104,7 +104,7 @@ const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) 
     }
 
     let ret = await ReceiverList(saveReceiver);
-    await User.findByIdAndUpdate(user_id, {$push: {receiver_list: ret._id}});
+    await User.findByIdAndUpdate(user_id, { $push: { receiver_list: ret._id } });
     return ret;
   } catch (error) {
     throw createError(500, error);
@@ -130,7 +130,9 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           src_acc: source_account,
           des_acc: target_account,
           amount: amount_money,
-          toFullName
+          toFullName,
+          isFeePayBySender: feePayBySender,
+          fee: fee
         }
         return await eightBank.sendMoney(user_id, transaction);
       }
