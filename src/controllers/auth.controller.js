@@ -23,10 +23,10 @@ const refresh = async (req, res, next) => {
 
 const forgotPasswordHandler = async (req, res, next) => {
   try {
-    let { email } = req.body;
+    let {email} = req.body;
     let operation = "RESET PASSWORD";
     let mail_subject = "YOUR RESET PASSWORD OTP";
-    await authService.sendOTP(email, operation, mail_subject);
+    await authService.sendOTP(null, email, operation, mail_subject);
     res.status(200).send({
       ok: true
     });
@@ -37,7 +37,7 @@ const forgotPasswordHandler = async (req, res, next) => {
 
 const resetPassword = async (req, res, next) => {
   try {
-    let { email, OTP, password } = req.body;
+    let {email, OTP, password} = req.body;
     let result = await authService.resetPassword(email, OTP, password);
     res.status(200).send(result);
   } catch (error) {
