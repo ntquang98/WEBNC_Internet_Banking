@@ -102,7 +102,7 @@ const resetPassword = async (email, OTP, newPassword) => {
     if (!user) {
       throw createError(404);
     }
-    if (user.otp_exp > moment().unix()) {
+    if (user.otp_exp < moment().unix()) {
       throw createError(400, 'The OTP is now invalid');
     }
     let password = bcrypt.hashSync(newPassword, 8);
