@@ -1,9 +1,11 @@
 const User = require('../models/schema/user');
 const Account = require('../models/schema/account');
+const Notification = require('../models/schema/notification');
 const generator = require('../utils/generator');
 const createError = require('http-errors');
 const bcrypt = require('bcryptjs');
 const transactionService = require('./transaction.service');
+const notifyFactory = require('../utils/notificationHelper');
 
 const createCustomer = async info => {
   let {
@@ -66,6 +68,7 @@ const createCustomer = async info => {
 
 const sendMoneyToCustomerAccount = async (account_number, amount) => {
   try {
+    let account = await Account.findOne({ account_number });
     let transaction = {
       src_acc: 'S2Q',
       src_bank: 'S2Q Bank',
@@ -75,6 +78,10 @@ const sendMoneyToCustomerAccount = async (account_number, amount) => {
       description: 'Nạp tiền tại quầy giao dịch',
     }
     let ret = transactionService.sendMoneyToAccount(transaction);
+
+    let notify = notifyFactory.createReceiveDebtNotification(account.user_id, amount, 'S2Q Bank', transaction.description);
+    await Notification(notify).save();
+
     return ret;
   } catch (error) {
     throw error;

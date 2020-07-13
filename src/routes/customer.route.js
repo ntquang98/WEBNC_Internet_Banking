@@ -89,8 +89,13 @@ router.post('/password',
   customerController.changePassword
 )
 
-//router.get('/notification', customerController.getAllNotification
-//)
+router.get('/notification',
+  customerController.getNotifies
+)
+
+router.post('/notification',
+  customerController.seenNotifies
+)
 
 module.exports = router;
 

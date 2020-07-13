@@ -1,8 +1,9 @@
 const customerService = require('../services/customer.service');
 const partnerService = require('../services/partner.service');
+const Notification = require('../models/schema/notification');
 
 const getAllAccount = async (req, res, next) => {
-  let {user_id} = req.tokenPayload;
+  let { user_id } = req.tokenPayload;
   try {
     let accounts = await customerService.getAllAccount(user_id);
     res.status(200).send(accounts);
@@ -12,7 +13,7 @@ const getAllAccount = async (req, res, next) => {
 }
 
 const getOneAccountByAccountNumber = async (req, res, next) => {
-  let {account_number} = req.params;
+  let { account_number } = req.params;
   try {
     let account = await customerService.getOneAccountByAccountNumber(account_number);
     res.status(200).send(account);
@@ -21,8 +22,8 @@ const getOneAccountByAccountNumber = async (req, res, next) => {
   }
 }
 const createSaveAccount = async (req, res, next) => {
-  let {account_name, account_object} = req.body;
-  let {user_id} = req.tokenPayload;
+  let { account_name, account_object } = req.body;
+  let { user_id } = req.tokenPayload;
   try {
     let account = await customerService.createSaveAccount(account_name, account_object, user_id);
     res.status(200).send(account);
@@ -50,7 +51,7 @@ const changeAccountName = async (req, res, next) => {
 }
 
 const getAllReceiverOfUser = async (req, res, next) => {
-  let {user_id} = req.tokenPayload;
+  let { user_id } = req.tokenPayload;
   try {
     let receivers = await customerService.getAllReceiverOfUser(user_id);
     res.status(200).send(receivers);
@@ -60,7 +61,7 @@ const getAllReceiverOfUser = async (req, res, next) => {
 }
 
 const getReceiverById = async (req, res, next) => {
-  let {receiver_id} = req.params;
+  let { receiver_id } = req.params;
   try {
     let receiver = await customerService.getReceiverById(receiver_id);
     res.status(200).send(receiver);
@@ -70,8 +71,8 @@ const getReceiverById = async (req, res, next) => {
 }
 
 const updateReceiver = async (req, res, next) => {
-  let {name} = req.body;
-  let {receiver_id} = req.params;
+  let { name } = req.body;
+  let { receiver_id } = req.params;
   try {
     let update = await customerService.updateReceiver(receiver_id, name);
     res.status(200).send(update);
@@ -81,7 +82,7 @@ const updateReceiver = async (req, res, next) => {
 }
 
 const deleteReceiver = async (req, res, next) => {
-  let {receiver_id} = req.params;
+  let { receiver_id } = req.params;
   try {
     let delReceiver = await customerService.deleteReceiver(receiver_id);
     res.status(200).send(delReceiver);
@@ -91,8 +92,8 @@ const deleteReceiver = async (req, res, next) => {
 }
 
 const createReceiver = async (req, res, next) => {
-  let {name, account_number, bank} = req.body;
-  const {user_id} = req.tokenPayload;
+  let { name, account_number, bank } = req.body;
+  const { user_id } = req.tokenPayload;
   try {
     let receiver;
     if (bank === 'S2Q Bank') {
@@ -108,7 +109,7 @@ const createReceiver = async (req, res, next) => {
 }
 
 const getAllDebtReminder = async (req, res, next) => {
-  let {user_id} = req.tokenPayload;
+  let { user_id } = req.tokenPayload;
   try {
     let debts = await customerService.getAllDebtReminder(user_id);
     res.status(200).send(debts);
@@ -118,7 +119,7 @@ const getAllDebtReminder = async (req, res, next) => {
 }
 
 const getDebtReminderById = async (req, res, next) => {
-  let {user_id} = req.tokenPayload;
+  let { user_id } = req.tokenPayload;
   try {
     let ret = await customerService.getDebtReminderById(user_id, req.params.reminder_id);
     res.status(200).send(ret);
@@ -129,7 +130,7 @@ const getDebtReminderById = async (req, res, next) => {
 
 const createDebtReminder = async (req, res, next) => {
   try {
-    let {user_id} = req.tokenPayload;
+    let { user_id } = req.tokenPayload;
     let reminder = {
       user_id,
       owner_account_number: req.body.src_account_number,
@@ -164,8 +165,8 @@ const deleteDebtReminder = async (req, res, next) => {
 }
 
 const getUserInfoByAccountNumber = async (req, res, next) => {
-  let {account_number} = req.params;
-  let {bank} = req.query;
+  let { account_number } = req.params;
+  let { bank } = req.query;
   try {
     let user = bank ?
       bank === 'S2Q Bank' ?
@@ -189,8 +190,8 @@ const getAllBankName = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-    let {user_id} = req.tokenPayload;
-    let {old_password, new_password} = req.body;
+    let { user_id } = req.tokenPayload;
+    let { old_password, new_password } = req.body;
 
     let result = await customerService.changePassword(user_id, old_password, new_password);
     res.status(200).send(result);
@@ -201,11 +202,35 @@ const changePassword = async (req, res, next) => {
 
 const getNotifies = async (req, res, next) => {
   try {
-    const {user_id} = req.tokenPayload;
-    const {ts} = req.params;
+    const { user_id } = req.tokenPayload;
+    const ts = +req.query.ts;
+    let loop = 0;
 
-    const ret = await customerService.getAllNotification(user_id, ts);
-    res.status(200).send(ret);
+    const fn = async _ => {
+
+      let notifies = await Notification.find({
+        user_id,
+        is_seen: false,
+        create_at: { $gt: ts }
+      });
+
+      let return_ts = Date.now();
+      if (notifies.length > 0) {
+
+        return res.json({
+          notify: notifies,
+          return_ts
+        });
+      } else {
+        ++loop;
+        if (loop < 4) {
+          setTimeout(fn, 2000);
+        } else {
+          return res.status(204).send('NO CONTENT');
+        }
+      }
+    }
+    return await fn();
 
   } catch (error) {
     next(error);
@@ -214,9 +239,8 @@ const getNotifies = async (req, res, next) => {
 
 const seenNotifies = async (req, res, next) => {
   try {
-    let {user_id} = req.tokenPayload;
-
-    let ret = await seenAllNotification(user_id);
+    let { user_id } = req.tokenPayload;
+    let ret = await customerService.seenAllNotification(user_id);
     res.status(200).send(ret);
   } catch (error) {
     next(error);
