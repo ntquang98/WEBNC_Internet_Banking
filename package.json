@@ -48,7 +48,10 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "jest": "^26.0.1",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.0.1"
   },
   "jest": {
     "testEnvironment": "node"

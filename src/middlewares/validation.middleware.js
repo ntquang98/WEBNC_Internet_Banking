@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const {body} = require('express-validator');
 
 module.exports = (method) => {
   switch (method) {
@@ -13,15 +13,15 @@ module.exports = (method) => {
       return [
         body('user_name', 'user_name bị thiếu').exists(),
         body('password')
-          .isLength({ min: 5 }).withMessage('password phải dài ít nhất 5 kí tự')
+          .isLength({min: 5}).withMessage('password phải dài ít nhất 5 kí tự')
           .exists().withMessage('password bị thiếu')
       ]
     }
     case 'create_user': {
       return [
-        body('user_name', 'user_name is missing').exists(),
+        body('email').isEmail('Email không đúng định dạng').exists('Email bị thiếu'),
         body('full_name', 'full_name is missing').exists(),
-        body('password').isLength({ min: 5 }).withMessage('password phải dài ít nhất 5 kí tự')
+        body('password').isLength({min: 5}).withMessage('password phải dài ít nhất 5 kí tự')
       ];
     }
     case 'create_debt': {
@@ -49,7 +49,7 @@ module.exports = (method) => {
       return [
         body('email').exists(),
         body('OTP').exists(),
-        body('password').exists().isLength({ min: 5 })
+        body('password').exists().isLength({min: 5})
       ]
     case 'makeTransaction':
       return [
@@ -59,7 +59,7 @@ module.exports = (method) => {
         body('destination_bank').exists(),
         body('isFeePayBySender').exists(),
         body('fee').exists(),
-        body('OTP').isLength({ min: 6, max: 6 }),
+        body('OTP').isLength({min: 6, max: 6}),
       ];
   }
 }

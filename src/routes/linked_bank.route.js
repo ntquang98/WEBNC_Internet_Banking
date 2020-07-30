@@ -3,7 +3,7 @@ const router = express.Router();
 const model = require('../models/linked_bank.model');
 const api_query = require('../models/api_query');
 const createError = require('http-errors');
-const { slimCheck, fullCheck } = require('../middlewares/security.middleware');
+const {slimCheck, fullCheck} = require('../middlewares/security.middleware');
 const db = require('../utils/db');
 const Account = require('../models/schema/account');
 const security = require('../utils/security');
@@ -41,9 +41,9 @@ router.get('/account', slimCheck, async (req, res) => {
       data: {
         input: [{
           model: "account",
-          data: { account_number: req.body.data.account_number }
+          data: {account_number: req.body.data.account_number}
         }],
-        output: [{ model: "user" }]
+        output: [{model: "user"}]
       }
     });
     let ret = {
@@ -61,8 +61,8 @@ router.post('/account', fullCheck, async (req, res) => {
   try {
     let result = await db.increaseField({
       model: Account,
-      query: { account_number: req.body.data.account_number },
-      data: { account_value: req.body.data.amount }
+      query: {account_number: req.body.data.account_number},
+      data: {account_value: req.body.data.amount}
     });
 
     // luu du lieu giao dich lai
@@ -76,8 +76,8 @@ router.post('/account', fullCheck, async (req, res) => {
     let myBank = await model.findMyBank();
     myBank = myBank.attribute_data[0];
     let private_key = myBank.private_key.replace(/\\n/g, '\n');
-    let sig = await security.encrypt(updateResult, 'sha256', private_key, 'hex');
-    let ret = { data: updateResult, sig };
+    let sig = security.encrypt(updateResult, 'sha256', private_key, 'hex');
+    let ret = {data: updateResult, sig};
     return res.status(200).send(ret);
   } catch (err) {
     throw createError(404, "Not found account number");

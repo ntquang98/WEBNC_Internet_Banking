@@ -11,7 +11,7 @@ const createCustomer = async (req, res, next) => {
 
 const sendMoney = async (req, res, next) => {
   try {
-    let { account_number } = req.params;
+    let {account_number} = req.params;
     let amount = req.body.amount;
     let ret = await employeeService.sendMoneyToCustomerAccount(account_number, amount);
     res.status(200).send(ret);
@@ -21,7 +21,7 @@ const sendMoney = async (req, res, next) => {
 }
 
 const getUserInfo = async (req, res, next) => {
-  let { email } = req.query;
+  let {email} = req.query;
   try {
     let ret = await employeeService.getUserInformation(email);
     res.status(200).send(ret);
@@ -31,7 +31,7 @@ const getUserInfo = async (req, res, next) => {
 }
 
 const getAccountTransactionHistories = async (req, res, next) => {
-  let { account_number } = req.params;
+  let {account_number} = req.params;
   try {
     let ret = await employeeService.getAccountTransactionHistories(account_number);
     res.status(200).send(ret);
