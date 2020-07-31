@@ -19,9 +19,9 @@ module.exports = (method) => {
     }
     case 'create_user': {
       return [
-        body('email').isEmail('Email không đúng định dạng').exists('Email bị thiếu'),
         body('full_name', 'full_name is missing').exists(),
-        body('password').isLength({min: 5}).withMessage('password phải dài ít nhất 5 kí tự')
+        body('user_name', 'user_name is missing').exists(),
+        body('password').isLength({min: 5, max: 20}).withMessage('password phải dài ít nhất 5 kí tự')
       ];
     }
     case 'create_debt': {
