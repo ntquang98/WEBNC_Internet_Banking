@@ -338,6 +338,9 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
 const getUserInfoByAccountNumber = async account_number => {
   try {
     let account = await Account.findOne({account_number, account_type: 'deposit'});
+    if (!account) {
+      throw createError(404, 'Can not find account number!');
+    }
     let user = await User.findById(account.user_id);
     if (!user) {
       throw createError(404, 'Can not find User');
