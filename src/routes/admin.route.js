@@ -27,6 +27,7 @@ route.post(
 route.get('/admins', adminController.getAllAdmin);
 route.get('/employees', adminController.getAllEmployee);
 route.get('/customers', adminController.getAllCustomer);
+route.get('/users', adminController.getAllUser);
 
 route.delete('/employees/:user_id', adminController.deleteEmployee);
 route.delete('/customers/:user_id', adminController.deleteCustomer);

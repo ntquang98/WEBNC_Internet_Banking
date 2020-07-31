@@ -38,7 +38,7 @@ const getAllCustomer = async (req, res, next) => {
 
 const deleteCustomer = async (req, res, next) => {
   try {
-    let { user_id } = req.params;
+    let {user_id} = req.params;
     let result = await adminService.deleteCustomer(user_id);
     res.status(200).send(result);
   } catch (error) {
@@ -57,7 +57,7 @@ const getAllEmployee = async (req, res, next) => {
 
 const deleteEmployee = async (req, res, next) => {
   try {
-    let { user_id } = req.params;
+    let {user_id} = req.params;
     let ret = await adminService.deleteEmployee(user_id);
     res.status(200).send(ret);
   } catch (error) {
@@ -74,6 +74,15 @@ const getAllAdmin = async (req, res, next) => {
   }
 }
 
+const getAllUser = async (req, res, next) => {
+  try {
+    let ret = await adminService.getAllUser();
+    res.status(200).send(ret);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createAdmin,
   createEmployee,
@@ -82,5 +91,6 @@ module.exports = {
   getAllCustomer,
   getAllEmployee,
   deleteCustomer,
-  deleteEmployee
+  deleteEmployee,
+  getAllUser,
 }

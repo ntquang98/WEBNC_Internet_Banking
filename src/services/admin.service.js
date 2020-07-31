@@ -118,6 +118,18 @@ const getAllAdmin = async _ => {
   }
 }
 
+const getAllUser = async _ => {
+  try {
+    let users = await User.find().populate({
+      path: 'accounts',
+      select: ['_id', 'account_number', 'account_name', 'account_type', 'amount']
+    });
+    return users;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 // TODO: query thong tin ngan hang doi tac, doi xoat
 
@@ -153,5 +165,6 @@ module.exports = {
   deleteCustomer,
   getAllEmployee,
   deleteEmployee,
-  getAllAdmin
+  getAllAdmin,
+  getAllUser
 }
