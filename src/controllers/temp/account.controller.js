@@ -53,13 +53,13 @@ module.exports = {
     }
   },
   deleteAccount: async account_number => {
+    const session = await Account.startSession();
+    session.startTransaction();
     try {
       let account = await db.find({ model: Account, data: { account_number } });
       if (account.amount > 0) {
         throw { status: 403, success: false, message: "Account can't be deleted, due to account balance" };
       }
-      const session = await Account.startSession();
-      session.startTransaction();
       const options = { session };
       await Account.findOneAndDelete({ _id: account._id }, options);
       await User.findOneAndUpdate({ _id: account.user_id }, { $pull: { accounts: account_number } });
@@ -70,6 +70,8 @@ module.exports = {
         account_number
       }
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       throw error;
     }
   },

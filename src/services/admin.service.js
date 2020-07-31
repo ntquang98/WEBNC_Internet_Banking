@@ -39,10 +39,14 @@ const deleteCustomer = async user_id => {
     let options = {session};
     let result = await User.findByIdAndDelete(user_id, options);
     await Account.remove({_id: {$in: result.accounts}}, options);
+    await session.commitTransaction();
+    session.endSession();
     return {
       success: true
     }
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     throw createError(500, 'Server Error');
   }
 }

@@ -67,8 +67,12 @@ module.exports = {
       }
       const receiver = await ReceiverList(save_receiver).save(options);
       await User.findByIdAndUpdate(user_id, { $push: { receiver_list: receiver._id } }, options);
+      await session.commitTransaction();
+      session.endSession();
       return receiver;
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       throw error;
     }
   }

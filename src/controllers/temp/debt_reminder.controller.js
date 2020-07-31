@@ -35,11 +35,15 @@ module.exports = {
         is_seen: false
       }
       const notification = await Notification(notify).save(options);
+      await session.commitTransaction();
+      session.endSession();
       return {
         success: true,
         debt
       }
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       throw error;
     }
   },
@@ -60,11 +64,15 @@ module.exports = {
         is_seen: false
       }
       const notification = await Notification(notify).save(options);
+      await session.commitTransaction();
+      session.endSession();
       return {
         success: true,
         debt
       }
     } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       throw error;
     }
   }
