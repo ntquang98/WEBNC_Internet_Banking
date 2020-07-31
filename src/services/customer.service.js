@@ -340,7 +340,7 @@ const getUserInfoByAccountNumber = async account_number => {
     let account = await Account.findOne({account_number, account_type: 'deposit'});
     let user = await User.findById(account.user_id);
     if (!user) {
-      throw createError[404];
+      throw createError(404, 'Can not find User');
     }
     return {
       user_name: user.user_name,
@@ -349,8 +349,9 @@ const getUserInfoByAccountNumber = async account_number => {
       full_name: user.full_name
     }
   } catch (error) {
+    console.log(error);
     if (error.status) throw error;
-    throw createError[500];
+    throw createError(500, 'Server Error');
   }
 }
 
