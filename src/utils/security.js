@@ -1,6 +1,6 @@
-const moment = require('moment');
 const crypto = require('crypto');
 const Bank = require('../models/schema/bank');
+const moment = require('moment');
 
 module.exports = {
   checkPartner: async (securityKey, bankName = null) => {
@@ -26,15 +26,18 @@ module.exports = {
   isOriginPackage: (data, timestamp, sig, securityKey, encodeType) => {
     let _data = JSON.stringify(data);
     let hash = crypto.createHash(encodeType).update(timestamp + _data + securityKey).digest('hex');
-    return sig == hash;
-
+    let v = sig == hash;
+    console.log('isOriginPackage', v);
+    return v;
   },
 
   verifySignature: (data, signature, publicKey) => {
     let _data = JSON.stringify(data);
     let verifier = crypto.createVerify('sha256');
     verifier.update(_data);
-    return verifier.verify(publicKey, signature, 'hex');
+    let v = verifier.verify(publicKey, signature, 'hex');
+    console.log('true Signature', v);
+    return v;
   },
 
   encrypt: (data, encodeType, privateKey, signature_format) => {
