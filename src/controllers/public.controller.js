@@ -32,15 +32,15 @@ const handleRequestFromPartner = async (req, res, next) => {
 }
 
 const validateRequestFromPartner = (req, res, next) => {
-  const { data } = req.body;
-  const { source_account, destination_account, source_bank, description, feePayBySender, fee, amount } = data;
-  if (!source_account) return res.status(400).send({ message: 'missing source_account' });
-  if (!destination_account) return res.status(400).send({ message: 'missing destination_account' });
-  if (!source_bank) return res.status(400).send({ message: 'missing source_bank' });
-  if (!description) return res.status(400).send({ message: 'missing description' });
-  if (!feePayBySender) return res.status(400).send({ message: 'missing is fee pay by sender' });
-  if (!fee) return res.status(400).send({ message: 'missing fee for transaction' });
-  if (!amount) return res.status(400).send({ message: 'missing amount of money for transaction' })
+  const {data} = req.body;
+  const {source_account, destination_account, source_bank, description, feePayBySender, fee, amount} = data;
+  if (!source_account) return res.status(400).send({message: 'missing source_account'});
+  if (!destination_account) return res.status(400).send({message: 'missing destination_account'});
+  if (!source_bank) return res.status(400).send({message: 'missing source_bank'});
+  if (!description) return res.status(400).send({message: 'missing description'});
+  if (feePayBySender == undefined) return res.status(400).send({message: 'missing is fee pay by sender'});
+  if (!fee) return res.status(400).send({message: 'missing fee for transaction'});
+  if (!amount) return res.status(400).send({message: 'missing amount of money for transaction'})
   next();
 }
 
