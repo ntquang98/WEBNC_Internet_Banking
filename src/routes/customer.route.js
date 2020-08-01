@@ -97,5 +97,9 @@ router.post('/notification',
   customerController.seenNotifies
 )
 
+router.delete('/notification',
+  customerController.hideNotifies
+)
+
 module.exports = router;
 
