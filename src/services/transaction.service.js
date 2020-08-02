@@ -353,16 +353,23 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
 
 const getTransactionHistory = async (account_number, transactionType = null) => {
   try {
-    let histories = [];
+    let histories;
     switch (transactionType) {
       case 'RECEIVED':
-        histories = await Transaction.find({des_number: account_number});
+        histories = await Transaction.find({des_number: account_number, transaction_type: 'TRANSFER'});
+        console.log(histories)
         break;
       case 'SEND':
-        histories = await Transaction.find({src_number: account_number});
+        histories = await Transaction.find({src_number: account_number, transaction_type: 'TRANSFER'});
         break;
       case 'PAY_DEBT':
-
+        histories = await Transaction.find({src_number: account_number, transaction_type: 'PAY_DEBT'});
+        break;
+      case 'SAVING':
+        histories = await Transaction.find({src_number: account_number, transaction_type: 'SAVING'});
+        break;
+      case 'WITHDRAW':
+        histories = await Transaction.find({des_number: account_number, transaction_type: 'WITHDRAW'});
         break;
       default:
         histories = await Transaction.find().or([
@@ -370,7 +377,7 @@ const getTransactionHistory = async (account_number, transactionType = null) => 
           {des_number: account_number}
         ]);
     }
-
+    console.log(histories)
     return histories.reverse(); // order new -> old
   } catch (error) {
     throw createError(500, 'Server Errors');

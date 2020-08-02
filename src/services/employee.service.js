@@ -114,6 +114,7 @@ const getUserInformation = async email => {
 
 const getAccountTransactionHistories = async (account_number, transactionType = null) => {
   try {
+    console.log('transactionType', transactionType)
     let ret = transactionService.getTransactionHistory(account_number, transactionType);
     return ret;
   } catch (error) {

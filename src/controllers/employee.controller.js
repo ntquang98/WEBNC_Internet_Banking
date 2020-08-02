@@ -32,8 +32,10 @@ const getUserInfo = async (req, res, next) => {
 
 const getAccountTransactionHistories = async (req, res, next) => {
   let {account_number} = req.params;
+  let {type} = req.query || null;
+  console.log(type)
   try {
-    let ret = await employeeService.getAccountTransactionHistories(account_number);
+    let ret = await employeeService.getAccountTransactionHistories(account_number, type);
     res.status(200).send(ret);
   } catch (error) {
     next(error);
