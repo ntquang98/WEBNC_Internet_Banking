@@ -112,9 +112,9 @@ const getUserInformation = async email => {
   }
 }
 
-const getAccountTransactionHistories = async account_number => {
+const getAccountTransactionHistories = async (account_number, transactionType = null) => {
   try {
-    let ret = transactionService.getTransactionHistory(account_number);
+    let ret = transactionService.getTransactionHistory(account_number, transactionType);
     return ret;
   } catch (error) {
     throw error;

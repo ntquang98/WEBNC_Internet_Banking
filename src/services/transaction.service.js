@@ -17,19 +17,19 @@ const AuthService = require('./auth.service');
 
 const security = require('../utils/security');
 
-const { generateTransactionNumber } = require('../utils/generator');
+const {generateTransactionNumber} = require('../utils/generator');
 const notifyFactory = require('../utils/notificationHelper');
 
 const _checkOTPOfUser = async (OTP, user_id, options = null) => {
   try {
-    let user = await User.findOne({ _id: user_id, otp: OTP }, null, options);
+    let user = await User.findOne({_id: user_id, otp: OTP}, null, options);
     if (!user) {
       throw createError(404, 'Can not find User or OTP is not found');
     }
     if (user.otp_exp < moment().unix()) {
       throw createError(400, 'The OTP is now invalid');
     }
-    await User.findByIdAndUpdate(user_id, { otp: '' }, options);
+    await User.findByIdAndUpdate(user_id, {otp: ''}, options);
   } catch (error) {
     throw error;
   }
@@ -39,12 +39,12 @@ const sendMoneyToAccount = async (transaction) => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    const options = { session };
-    const { amount, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
+    const options = {session};
+    const {amount, src_acc, des_acc, src_bank, des_bank, type, description} = transaction;
 
     let receiver = await Account.findOneAndUpdate(
-      { account_number: des_acc },
-      { $inc: { amount: amount } },
+      {account_number: des_acc},
+      {$inc: {amount: amount}},
       options
     );
     let new_transaction = {
@@ -77,12 +77,12 @@ const sendMoneyToAccount = async (transaction) => {
 
 const _doingInnerTransfer = async (transaction, options) => {
   try {
-    const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
+    const {feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description} = transaction;
 
     let amount_inc = feePayBySender ? amount : amount - fee;
     let amount_dec = feePayBySender ? amount + fee : amount;
 
-    let user_send = await Account.findOne({ account_number: src_acc }, null, options);
+    let user_send = await Account.findOne({account_number: src_acc}, null, options);
     if (!user_send) {
       throw createError(404, 'Can not find user');
     }
@@ -91,13 +91,13 @@ const _doingInnerTransfer = async (transaction, options) => {
     }
 
     let receiver = await Account.findOneAndUpdate(
-      { account_number: des_acc },
-      { $inc: { amount: amount_inc } },
+      {account_number: des_acc},
+      {$inc: {amount: amount_inc}},
       options
     );
     let sender = await Account.findOneAndUpdate(
-      { account_number: src_acc },
-      { $inc: { amount: -amount_dec } },
+      {account_number: src_acc},
+      {$inc: {amount: -amount_dec}},
       options
     );
     let transaction_number = generateTransactionNumber();
@@ -133,20 +133,20 @@ const _doingInnerTransfer = async (transaction, options) => {
 }
 
 const _doingOuterTransfer = async (transaction, options) => {
-  const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description, toFullName, user_id } = transaction;
+  const {feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description, toFullName, user_id} = transaction;
   let amount_inc = feePayBySender ? amount : amount - fee;
   let amount_dec = feePayBySender ? amount + fee : amount;
   try {
-    let checkAccount = await Account.findOne({ account_number: src_acc });
+    let checkAccount = await Account.findOne({account_number: src_acc});
     if (checkAccount.amount < amount_dec) {
       throw createError(400, 'Account balance is not enough for transaction');
     }
     let sender = await Account.findOneAndUpdate(
-      { account_number: src_acc },
-      { $inc: { amount: -amount_dec } },
+      {account_number: src_acc},
+      {$inc: {amount: -amount_dec}},
       options
     );
-    let { request, response } = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee, toFullName, user_id);
+    let {request, response} = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee, toFullName, user_id);
     let transaction_number = generateTransactionNumber();
     let new_transaction = {
       transaction_number,
@@ -201,7 +201,7 @@ const makeTransaction = async (OTP, user_id, transaction) => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    const options = { session };
+    const options = {session};
     if (OTP) {
       await _checkOTPOfUser(OTP, user_id, options);
     }
@@ -224,9 +224,9 @@ const payDebt = async (OTP, user_id, debtId) => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    const options = { session };
+    const options = {session};
     await _checkOTPOfUser(OTP, user_id, options);
-    let reminder = await DebtReminder.findOne({ _id: debtId, receiver_id: user_id }, null, options);
+    let reminder = await DebtReminder.findOne({_id: debtId, receiver_id: user_id}, null, options);
     if (!reminder) {
       throw createError(404, 'Not find Debt Reminder');
     }
@@ -252,7 +252,7 @@ const payDebt = async (OTP, user_id, debtId) => {
     };
 
     let trans = await _doingInnerTransfer(transaction, options);
-    await DebtReminder.findByIdAndUpdate(debtId, { is_done: true }, options);
+    await DebtReminder.findByIdAndUpdate(debtId, {is_done: true}, options);
 
     let notify1 = createNotificationObject({
       user_id: sender_id,
@@ -282,12 +282,12 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    const { feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description } = transaction;
-    const options = { session }
+    const {feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description} = transaction;
+    const options = {session}
     let amount_inc = feePayBySender ? amount : amount - fee;
     let receiver = await Account.findOneAndUpdate(
-      { account_number: des_acc },
-      { $inc: { amount: amount_inc } },
+      {account_number: des_acc},
+      {$inc: {amount: amount_inc}},
       options
     );
     if (!receiver) {
@@ -307,7 +307,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       transaction_type: type
     };
     await Transaction(new_transaction).save(options);
-    let myBank = await MyBank.findOne({ bank_name: 'S2Q Bank' });
+    let myBank = await MyBank.findOne({bank_name: 'S2Q Bank'});
     let private_key = myBank.private_key_rsa.replace(/\\n/g, '\n');
     let sig = security.encrypt(new_transaction, 'sha256', private_key, 'hex');
 
@@ -351,12 +351,26 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
   }
 }
 
-const getTransactionHistory = async account_number => {
+const getTransactionHistory = async (account_number, transactionType = null) => {
   try {
-    let histories = await Transaction.find().or([
-      { src_number: account_number },
-      { des_number: account_number }
-    ]);
+    let histories = [];
+    switch (transactionType) {
+      case 'RECEIVED':
+        histories = await Transaction.find({des_number: account_number});
+        break;
+      case 'SEND':
+        histories = await Transaction.find({src_number: account_number});
+        break;
+      case 'PAY_DEBT':
+
+        break;
+      default:
+        histories = await Transaction.find().or([
+          {src_number: account_number},
+          {des_number: account_number}
+        ]);
+    }
+
     return histories.reverse(); // order new -> old
   } catch (error) {
     throw createError(500, 'Server Errors');
@@ -367,9 +381,9 @@ const saveMoney = async (user_id, account_number, save_account_number, amount) =
   const session = await Account.startSession();
   session.startTransaction()
   try {
-    let options = { session };
+    let options = {session};
     amount = parseInt(amount);
-    let deposit = await Account.findOne({ account_number: account_number });
+    let deposit = await Account.findOne({account_number: account_number});
     console.log(deposit)
     if (!deposit) {
       throw createError(404, 'Cannot find account');
@@ -378,8 +392,8 @@ const saveMoney = async (user_id, account_number, save_account_number, amount) =
       throw createError(400, 'Account does not have enough money');
     }
 
-    let update = await Account.findByIdAndUpdate(deposit._id, { $inc: { amount: -amount } }, options);
-    let updateSave = await Account.findOneAndUpdate({ account_number: save_account_number }, { $inc: { amount: amount } }, options);
+    let update = await Account.findByIdAndUpdate(deposit._id, {$inc: {amount: -amount}}, options);
+    let updateSave = await Account.findOneAndUpdate({account_number: save_account_number}, {$inc: {amount: amount}}, options);
     let transaction = {
       transaction_number: generateTransactionNumber(),
       src_number: account_number,
@@ -418,8 +432,8 @@ const withDrawMoney = async (user_id, account_number, save_account_number, amoun
   const session = await Account.startSession();
   session.startTransaction()
   try {
-    let options = { session };
-    let save = await Account.findOne({ account_number: save_account_number });
+    let options = {session};
+    let save = await Account.findOne({account_number: save_account_number});
     if (!save) {
       throw createError(404, 'Cannot find account');
     }
@@ -427,8 +441,8 @@ const withDrawMoney = async (user_id, account_number, save_account_number, amoun
       throw createError(400, 'Account does not have enough money');
     }
 
-    let update = await Account.findByIdAndUpdate(save._id, { $inc: { amount: -amount } }, options);
-    let updateDeposit = await Account.findOneAndUpdate({ account_number: account_number }, { $inc: { amount: amount } }, options);
+    let update = await Account.findByIdAndUpdate(save._id, {$inc: {amount: -amount}}, options);
+    let updateDeposit = await Account.findOneAndUpdate({account_number: account_number}, {$inc: {amount: amount}}, options);
     let transaction = {
       transaction_number: generateTransactionNumber(),
       src_number: save_account_number,

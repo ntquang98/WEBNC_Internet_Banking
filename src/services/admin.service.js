@@ -6,6 +6,7 @@ const RequestLog = require('../models/schema/request_log');
 const ResponseLog = require('../models/schema/response_log');
 const PartnerRequestLog = require('../models/schema/partner_request_log');
 const PartnerResponseLog = require('../models/schema/partner_response_log');
+const Transaction = require('../models/schema/transaction');
 
 const createError = require('http-errors');
 
