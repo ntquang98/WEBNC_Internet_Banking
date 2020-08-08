@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/schema/user');
 const Account = require('../models/schema/account');
-
+const Bank = require('../models/schema/bank');
 const RequestLog = require('../models/schema/request_log');
 const ResponseLog = require('../models/schema/response_log');
 const PartnerRequestLog = require('../models/schema/partner_request_log');
@@ -139,12 +139,37 @@ const getAllUser = async _ => {
 // TODO: query thong tin ngan hang doi tac, doi xoat
 
 const getAllPartner = async _ => {
+  try {
 
+    let request_log = await RequestLog.find().populate({
+      path: 'transaction_number',
+    });
+
+    return request_log;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 const getOnePartner = async name => {
-
+  try {
+    let request = await Transaction
+      .find({des_bank: name})
+      .select({"_id": 0, "_v": 0});
+    let response = await Transaction
+      .find({src_bank: name})
+      .select({"_id": 0, "_v": 0});
+    return {
+      request,
+      response
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
+
 
 
 // xem lịch sử giao dịch với ngân hàng khác
@@ -171,5 +196,7 @@ module.exports = {
   getAllEmployee,
   deleteEmployee,
   getAllAdmin,
-  getAllUser
+  getAllUser,
+  getAllPartner,
+  getOnePartner,
 }

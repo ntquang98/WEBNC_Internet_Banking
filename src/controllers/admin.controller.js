@@ -83,6 +83,25 @@ const getAllUser = async (req, res, next) => {
   }
 }
 
+const getAllPartner = async (req, res, next) => {
+  try {
+    let ret = await adminService.getAllPartner();
+    res.status(200).send(ret);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const getOnePartner = async (req, res, next) => {
+  try {
+    let {partner} = req.params;
+    let ret = await adminService.getOnePartner(partner);
+    res.status(200).send(ret);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createAdmin,
   createEmployee,
@@ -93,4 +112,6 @@ module.exports = {
   deleteCustomer,
   deleteEmployee,
   getAllUser,
+  getAllPartner,
+  getOnePartner
 }

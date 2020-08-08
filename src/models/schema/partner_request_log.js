@@ -9,5 +9,5 @@ let PartnerRequestLog = new mongoose.Schema({
   signature: String,
   request_amount: Number
 });
-
+// partner lÀ mình gọi partner trả lời
 module.exports = PartnerRequestLog = mongoose.model('partner_request_log', PartnerRequestLog, 'partner_request_log');

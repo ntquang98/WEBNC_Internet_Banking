@@ -3,7 +3,9 @@ const authController = require('../controllers/auth.controller');
 const validate = require('../middlewares/validation.middleware');
 const validateRequest = require('../middlewares/validateRequest.middleware');
 
+
 /* const adminService = require('../services/admin.service') */;
+const adminController = require('../controllers/admin.controller');
 
 router.post('/login',
   validate('login'),
@@ -39,5 +41,13 @@ router.post('/new_password',
     throw error;
   }
 }); */
+
+router.get('/all_partner',
+  adminController.getAllPartner
+)
+
+router.get('/getOne/:partner',
+  adminController.getOnePartner
+)
 
 module.exports = router;

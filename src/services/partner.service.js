@@ -19,12 +19,13 @@ const createError = require('http-errors');
 
 const eightBank = require('./partner/eight.service');
 const mpBank = require('./partner/mp.service');
+const qbanking = require('./partner/qbanking.service');
 
 const _requestNKLBank = async (data) => {
   try {
     let timestamp = moment().toString();
     const hash = CryptoJS.AES.encrypt(
-      JSON.stringify({ data, timestamp, secret_key }),
+      JSON.stringify({data, timestamp, secret_key}),
       secret_key
     ).toString();
     const _headers = {
@@ -36,16 +37,16 @@ const _requestNKLBank = async (data) => {
     let signed_data = null;
 
     if (data.transaction_type === "+") {
-      const { keys: [privateKey] } = await openpgp.key.readArmored(privateKeyArmored);
+      const {keys: [privateKey]} = await openpgp.key.readArmored(privateKeyArmored);
       await privateKey.decrypt(passphrase);
-      const { data: cleartext } = await openpgp.sign({
+      const {data: cleartext} = await openpgp.sign({
         message: openpgp.cleartext.fromText(JSON.stringify(data)), // CleartextMessage or Message object
         privateKeys: [privateKey], // for signing
       });
       signed_data = cleartext;
     }
 
-    let response = await apiCaller(url, 'POST', _headers, { data, signed_data });
+    let response = await apiCaller(url, 'POST', _headers, {data, signed_data});
 
     let request = {
       partner_name: 'NKL Bank',
@@ -64,7 +65,7 @@ const _requestNKLBank = async (data) => {
       signature: response.data.sign
     }
     console.log(response)
-    return data.transaction_type === '?' ? response.data : { request, response: ret_response };
+    return data.transaction_type === '?' ? response.data : {request, response: ret_response};
   } catch (error) {
     throw createError(error.response.status, error.response.message);
   }
@@ -83,8 +84,11 @@ const requestInfoPartnerBank = async (account_number, bank_name) => {
         return await eightBank.requestInfo(account_number);
       case 'MPBank':
         return await mpBank.requestInfo(account_number);
+      case 'qbanking':
+        return await qbanking.getProfile(account_number);
     }
   } catch (error) {
+    console.log(error)
     throw error;
   }
 }
@@ -104,7 +108,7 @@ const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) 
     }
 
     let ret = await ReceiverList(saveReceiver);
-    await User.findByIdAndUpdate(user_id, { $push: { receiver_list: ret._id } });
+    await User.findByIdAndUpdate(user_id, {$push: {receiver_list: ret._id}});
     return ret;
   } catch (error) {
     throw createError(500, error);
@@ -114,7 +118,7 @@ const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) 
 const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee, toFullName = null, user_id) => {
   try {
     switch (bank_name) {
-      case 'NKLBank':
+      case 'NKLBank': {
         if (!feePayBySender) amount_money -= fee;
         let data = {
           transaction_type: '+',
@@ -125,6 +129,7 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           charge_include: !feePayBySender
         };
         return await _requestNKLBank(data);
+      }
       case 'Eight': {
         let transaction = {
           src_acc: source_account,
@@ -132,11 +137,12 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           amount: amount_money,
           toFullName,
           isFeePayBySender: feePayBySender,
-          fee: fee
+          fee: fee,
+          transactionMessage: description
         }
         return await eightBank.sendMoney(user_id, transaction);
       }
-      case 'MPBank':
+      case 'MPBank': {
         let transaction = {
           src_acc: source_account,
           des_acc: target_account,
@@ -146,6 +152,15 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           fee
         }
         return await mpBank.sendMoney(user_id, transaction);
+      }
+      case 'qbanking': {
+        let data = {
+          amount: amount_money,
+          transactionMessage: description,
+          account_number: target_account
+        }
+        return await qbanking.payIn(user_id, data);
+      }
     }
   } catch (error) {
     console.log(error);

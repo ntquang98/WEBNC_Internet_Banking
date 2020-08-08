@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const Bank = require('../models/schema/bank');
 const moment = require('moment');
+const openpgp = require('openpgp');
 
 module.exports = {
   checkPartner: async (securityKey, bankName = null) => {
@@ -45,6 +46,26 @@ module.exports = {
     const sign = crypto.createSign(encodeType);
     sign.update(_data);
     return sign.sign(privateKey, signature_format);
+  },
+
+  encryptData: async (strDataSend, partnerPublicKey) => {
+    let {data: bodyData} = await openpgp.encrypt({
+      message: openpgp.message.fromText(strDataSend),
+      publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys
+    });
+    return bodyData;
+  },
+
+  signPgp: async (strDataSend, myPrivateKey, passphrase) => {
+    const {keys: [privateKeys]} = await openpgp.key.readArmored(myPrivateKey);
+    await privateKeys.decrypt(passphrase);
+
+    let {data: digital_sign} = await openpgp.sign({
+      message: openpgp.cleartext.fromText(strDataSend),
+      privateKeys: [privateKeys]
+    });
+    digital_sign = digital_sign.replace(/\r/g, "\\n").replace(/\n/g, "")
+    return digital_sign;
   }
 };
 

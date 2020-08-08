@@ -1,0 +1,15 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Ngân hàng QuangNguyen
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.4
+Comment: https://openpgpjs.org
+
+wpwEAQEKAAYFAl8qb1EACgkQhb6kEned5orjDgP/Vc6tth41mALWudS2lBUv
+SJE6FptHJIjw3bwaIfjJ4yM8FwWThf3nt53kaXTjP0eu348ZRwgecEuO+Fhb
+jkFEnMYgFAoUhYU2YlRXJGsk/yvvFHL82AzXxVucY3f/JHzIZ6UfyezsMw3d
+62bZStea1+PcWbaBgOG8Y44IMrFZJ9Y=
+=Y0BW
+-----END PGP SIGNATURE-----
