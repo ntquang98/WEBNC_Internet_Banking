@@ -20,6 +20,7 @@ const createError = require('http-errors');
 const eightBank = require('./partner/eight.service');
 const mpBank = require('./partner/mp.service');
 const qbanking = require('./partner/qbanking.service');
+const threeTbank = require('./partner/3tbanking.service');
 
 const _requestNKLBank = async (data) => {
   try {
@@ -86,6 +87,8 @@ const requestInfoPartnerBank = async (account_number, bank_name) => {
         return await mpBank.requestInfo(account_number);
       case 'qbanking':
         return await qbanking.getProfile(account_number);
+      case '3TBank':
+        return await threeTbank.getAccountInformation(account_number);
     }
   } catch (error) {
     console.log(error)
@@ -115,7 +118,17 @@ const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) 
   }
 }
 
-const sendMoneyToPartnerBank = async (source_account, target_account, amount_money, bank_name, description, feePayBySender, fee, toFullName = null, user_id) => {
+const sendMoneyToPartnerBank = async (
+  source_account,
+  target_account,
+  amount_money,
+  bank_name,
+  description,
+  feePayBySender,
+  fee,
+  toFullName = null,
+  user_id
+) => {
   try {
     switch (bank_name) {
       case 'NKLBank': {
@@ -160,6 +173,15 @@ const sendMoneyToPartnerBank = async (source_account, target_account, amount_mon
           account_number: target_account
         }
         return await qbanking.payIn(user_id, data);
+      }
+      case '3TBank': {
+        let data = {
+          amount: amount_money,
+          account_number: target_account,
+          feePayBySender,
+          source: source_account,
+        }
+        return await threeTbank.sendMoney(user_id, data);
       }
     }
   } catch (error) {

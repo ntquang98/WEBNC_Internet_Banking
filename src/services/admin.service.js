@@ -140,12 +140,8 @@ const getAllUser = async _ => {
 
 const getAllPartner = async _ => {
   try {
-
-    let request_log = await RequestLog.find().populate({
-      path: 'transaction_number',
-    });
-
-    return request_log;
+    let partners = await Bank.find();
+    return partners;
   } catch (error) {
     console.log(error);
     throw error;

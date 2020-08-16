@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 let Transaction = new mongoose.Schema({
+  transaction_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'transaction'
+  },
   transaction_number: String,
   src_number: String,
   src_bank: String,

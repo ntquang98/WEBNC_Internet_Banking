@@ -11,7 +11,7 @@ let bank = new mongoose.Schema({
   signature_encode_type: {type: String, required: true}, // md5, sha256, sha512,
   key_length: Number,
   passphrase: String, // option for pgp crypt
-  private_key: String // test purpose
+  private_key: String, // test purpos
 });
 
 

@@ -17,7 +17,6 @@ const verifyAuth = require('./middlewares/auth.middleware');
 
 app.use('/', express.static(__dirname + '/public'));
 
-//app.use(`/api/v1/linked`, require('./routes/linked_bank.route'));
 
 app.use('/auth', require('./routes/auth.route'));
 app.use('/employee', verifyAuth('employee'), require('./routes/employee.route'));
@@ -25,7 +24,6 @@ app.use('/customer', verifyAuth('customer'), require('./routes/customer.route'))
 app.use('/admin', verifyAuth('admin'), require('./routes/admin.route'));
 app.use('/transaction', verifyAuth('customer'), require('./routes/transaction.route'));
 app.use('/public', require('./routes/public.route'));
-//require('./tests/testabc');
 app.use((req, res, next) => {
   res.status(404).send('Not found this route. Not Implemented');
 });

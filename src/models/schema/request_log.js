@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 let RequestLog = mongoose.Schema({
-  transaction_number: {type: String, ref: 'transaction', field: 'transaction_number'},
+  transaction: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'transaction'
+  },
+  transaction_number: {type: String},
   partner_name: String,
   request_header: Object,
   request_body: Object,

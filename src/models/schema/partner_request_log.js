@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 let PartnerRequestLog = new mongoose.Schema({
+  transaction: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'transaction'
+  },
   transaction_number: String,
   partner_name: String,
   request_uri: String,

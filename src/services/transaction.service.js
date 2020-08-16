@@ -133,7 +133,19 @@ const _doingInnerTransfer = async (transaction, options) => {
 }
 
 const _doingOuterTransfer = async (transaction, options) => {
-  const {feePayBySender, amount, fee, src_acc, des_acc, src_bank, des_bank, type, description, toFullName, user_id} = transaction;
+  const {
+    feePayBySender,
+    amount,
+    fee,
+    src_acc,
+    des_acc,
+    src_bank,
+    des_bank,
+    type,
+    description,
+    toFullName,
+    user_id
+  } = transaction;
   let amount_inc = feePayBySender ? amount : amount - fee;
   let amount_dec = feePayBySender ? amount + fee : amount;
   try {
@@ -146,7 +158,18 @@ const _doingOuterTransfer = async (transaction, options) => {
       {$inc: {amount: -amount_dec}},
       options
     );
-    let {request, response} = await PartnerService.sendMoneyToPartnerBank(src_acc, des_acc, amount_inc, des_bank, description, feePayBySender, fee, toFullName, user_id);
+    let {request, response} = await PartnerService
+      .sendMoneyToPartnerBank(
+        src_acc,
+        des_acc,
+        amount_inc,
+        des_bank,
+        description,
+        feePayBySender,
+        fee,
+        toFullName,
+        user_id
+      );
     let transaction_number = generateTransactionNumber();
     let new_transaction = {
       transaction_number,
@@ -160,7 +183,10 @@ const _doingOuterTransfer = async (transaction, options) => {
       fee,
       transaction_type: type
     };
-    await Transaction(new_transaction).save(options);
+
+    let newTrans = await Transaction(new_transaction).save(options);
+    request.transaction = newTrans;
+    response.transaction = newTrans;
 
     let notify = notifyFactory.createSendMoneyNotification(sender.user_id, amount_dec, sender.balance, description);
     await Notification(notify).save();
@@ -254,17 +280,19 @@ const payDebt = async (OTP, user_id, debtId) => {
     let trans = await _doingInnerTransfer(transaction, options);
     await DebtReminder.findByIdAndUpdate(debtId, {is_done: true}, options);
 
-    let notify1 = createNotificationObject({
-      user_id: sender_id,
-      type: 'GET_DEBT',
-      amount, receiver_name, debtor_account_number
-    });
+    let notify1 = notifyFactory.createGetDebtNotification(
+      sender_id,
+      amount,
+      receiver_name,
+      debtor_account_number
+    );
 
-    let notify2 = createNotificationObject({
-      user_id: receiver_id,
-      type: 'PAY_DEBT',
-      amount, sender_name, owner_account_number
-    })
+    let notify2 = notifyFactory.createPayDebtNotification(
+      receiver_id,
+      amount,
+      sender_name,
+      owner_account_number
+    );
 
     await Transaction(transaction).save(options);
     await Notification.insertMany([notify1, notify2]);
@@ -306,7 +334,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       fee,
       transaction_type: type
     };
-    await Transaction(new_transaction).save(options);
+    let newTrans = await Transaction(new_transaction).save(options);
     let myBank = await MyBank.findOne({bank_name: 'S2Q Bank'});
     let private_key = myBank.private_key_rsa.replace(/\\n/g, '\n');
     let sig = security.encrypt(new_transaction, 'sha256', private_key, 'hex');
@@ -317,6 +345,7 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
     }
 
     let req = {
+      transaction: newTrans._id,
       transaction_number,
       partner_name: src_bank,
       request_header: header,
@@ -325,16 +354,19 @@ const handlePartnerRequest = async (header, body, signature, transaction) => {
       signature,
       request_amount: amount_inc
     }
-    let new_req = await RequestLog(req).save(options);
+
+    await RequestLog(req).save(options);
 
     let res = {
+      transaction: newTrans._id,
       transaction_number,
       partner_name: src_bank,
       response_body: new_transaction,
       response_time: new_transaction.day,
       signature: sig
     }
-    let new_res = await ResponseLog(res).save(options);
+
+    await ResponseLog(res).save(options);
 
     let notifies = notifyFactory.createReceiveMoneyNotification(receiver.user_id, amount_inc, receiver.amount, description);
     await Notification(notifies).save();
