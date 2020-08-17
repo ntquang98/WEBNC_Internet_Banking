@@ -17,7 +17,7 @@ const createCustomer = async info => {
   let username = generator.generateUserName();
 
   let new_user = {
-    username,
+    user_name: username,
     password: bcrypt.hashSync(password, 8),
     full_name,
     email,
