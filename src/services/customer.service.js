@@ -6,13 +6,13 @@ const Notification = require('../models/schema/notification');
 const ReceiverList = require('../models/schema/receiver_list');
 const Bank = require('../models/schema/bank');
 const createError = require('http-errors');
-const { generateAccountNumber } = require('../utils/generator');
+const {generateAccountNumber} = require('../utils/generator');
 const bcrypt = require('bcryptjs');
 const notifyFactory = require('../utils/notificationHelper');
 
 const getAllAccount = async user_id => {
   try {
-    let accounts = await Account.find({ user_id });
+    let accounts = await Account.find({user_id});
     if (accounts.length > 0) {
       return accounts;
     }
@@ -25,7 +25,7 @@ const getAllAccount = async user_id => {
 
 const getOneAccountByAccountNumber = async account_number => {
   try {
-    let account = await Account.findOne({ account_number });
+    let account = await Account.findOne({account_number});
     if (!account) {
       throw createError(404, 'Can not find account');
     }
@@ -48,11 +48,11 @@ const createSaveAccount = async (account_name, account_object, user_id) => {
       account_object,
       user_id,
     };
-    const options = { session };
+    const options = {session};
     const newAccount = await Account(account).save(options);
     const updateUser = await User.findOneAndUpdate(
-      { _id: user_id },
-      { $pull: { accounts: newAccount._id } },
+      {_id: user_id},
+      {$pull: {accounts: newAccount._id}},
       options
     );
     await session.commitTransaction();
@@ -75,16 +75,16 @@ const deleteAccount = async account_number => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    let account = await Account.findOne({ account_number: account_number });
+    let account = await Account.findOne({account_number: account_number});
     if (!account) {
       throw createError(404, 'Account not found');
     }
     if (account.amount > 0 || account.account_type !== 'save') {
       throw createError(400, "Account can not be deleted");
     }
-    const options = { session };
+    const options = {session};
     await Account.findByIdAndDelete(account._id, options);
-    await User.findOneAndUpdate({ _id: account.user_id }, { $pull: { accounts: account._id } }, options);
+    await User.findOneAndUpdate({_id: account.user_id}, {$pull: {accounts: account._id}}, options);
     await session.commitTransaction();
     session.endSession();
     return {
@@ -102,8 +102,8 @@ const changeAccountName = async (account_number, account_name) => {
   const session = await Account.startSession();
   session.startTransaction();
   try {
-    const options = { session, new: true };
-    let rs = await Account.findOneAndUpdate({ account_number }, { account_name }, options);
+    const options = {session, new: true};
+    let rs = await Account.findOneAndUpdate({account_number}, {account_name}, options);
     if (rs.account_type !== 'save') {
       throw createError(400, 'Can not change name of deposit account');
     }
@@ -123,8 +123,8 @@ const changeAccountName = async (account_number, account_name) => {
 
 const getAllDebtReminder = async user_id => {
   try {
-    let debt = await DebtReminder.find({ receiver_id: user_id });
-    let own = await DebtReminder.find({ sender_id: user_id });
+    let debt = await DebtReminder.find({receiver_id: user_id});
+    let own = await DebtReminder.find({sender_id: user_id});
     return {
       debt,
       own,
@@ -158,17 +158,17 @@ const getDebtReminderById = async (user_id, reminder_id) => {
 }
 
 const createDebtReminder = async reminder => {
-  let { user_id, owner_account_number, debtor_account_number, amount, description } = reminder;
+  let {user_id, owner_account_number, debtor_account_number, amount, description} = reminder;
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
     let day = Date.now();
-    const options = { session };
+    const options = {session};
     const sender = await User.findById(user_id);
-    if (!sender) throw createError(404, { message: "Cannot find User" });
-    const receiverAccount = await Account.findOne({ account_number: debtor_account_number });
-    const receiver = await User.findOne({ accounts: receiverAccount._id });
-    if (!receiver) throw createError(404, { message: "can not find user" });
+    if (!sender) throw createError(404, {message: "Cannot find User"});
+    const receiverAccount = await Account.findOne({account_number: debtor_account_number});
+    const receiver = await User.findOne({accounts: receiverAccount._id});
+    if (!receiver) throw createError(404, {message: "can not find user"});
     let remind = {
       owner_account_number,
       debtor_account_number,
@@ -184,7 +184,12 @@ const createDebtReminder = async reminder => {
     }
     const debt = await DebtReminder(remind).save(options);
 
-    let notify = notifyFactory.createReceiveDebtNotification(receiver._id, amount, sender.full_name, description);
+    let notify = notifyFactory.createReceiveDebtNotification(
+      receiver._id,
+      amount,
+      sender.full_name,
+      description
+    );
 
     await Notification(notify).save(options);
     await session.commitTransaction();
@@ -205,8 +210,8 @@ const cancelReminder = async (reminder_id, description) => {
   const session = await DebtReminder.startSession();
   session.startTransaction();
   try {
-    const options = { session };
-    const debt = await DebtReminder.findByIdAndUpdate(reminder_id, { is_cancel: true });
+    const options = {session};
+    const debt = await DebtReminder.findByIdAndUpdate(reminder_id, {is_cancel: true});
     if (!debt) {
       throw createError(404, 'Can not find reminder');
     }
@@ -251,7 +256,7 @@ const deleteReminder = async (reminder_id) => {
 
 const getAllReceiverOfUser = async user_id => {
   try {
-    return await ReceiverList.find({ user_id });
+    return await ReceiverList.find({user_id});
   } catch (error) {
     throw createError[500];
   }
@@ -259,7 +264,7 @@ const getAllReceiverOfUser = async user_id => {
 
 const getReceiverById = async receiver_id => {
   try {
-    let receiver = await ReceiverList.findById({ _id: receiver_id });
+    let receiver = await ReceiverList.findById({_id: receiver_id});
     if (!receiver) {
       throw createError[404];
     }
@@ -273,7 +278,7 @@ const getReceiverById = async receiver_id => {
 
 const updateReceiver = async (receiver_id, new_name) => {
   try {
-    let update = await ReceiverList.findByIdAndUpdate(receiver_id, { name: new_name }, { new: true });
+    let update = await ReceiverList.findByIdAndUpdate(receiver_id, {name: new_name}, {new: true});
     return update;
   } catch (error) {
     throw createError[404];
@@ -285,10 +290,10 @@ const deleteReceiver = async receiver_id => {
   try {
     session = await ReceiverList.startSession();
     session.startTransaction();
-    const options = { session };
-    const delReceiver = await ReceiverList.findOneAndDelete({ _id: receiver_id }, options);
+    const options = {session};
+    const delReceiver = await ReceiverList.findOneAndDelete({_id: receiver_id}, options);
     if (delReceiver._id) {
-      let updateUser = await User.findByIdAndUpdate(delReceiver.user_id, { $pull: { receivers: receiver_id } }, options);
+      let updateUser = await User.findByIdAndUpdate(delReceiver.user_id, {$pull: {receivers: receiver_id}}, options);
       await session.commitTransaction();
       session.endSession();
       return {
@@ -310,8 +315,8 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
   const session = await User.startSession();
   session.startTransaction();
   try {
-    const options = { session };
-    let account = await Account.findOne({ account_number: receiver_account, account_type: 'deposit' });
+    const options = {session};
+    let account = await Account.findOne({account_number: receiver_account, account_type: 'deposit'});
     if (!account) {
       throw createError(404, 'Account not found');
     }
@@ -326,7 +331,7 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
       account_number: receiver_account,
     }
     const receiver = await ReceiverList(save_receiver).save(options);
-    await User.findByIdAndUpdate(user_id, { $push: { receiver_list: receiver._id } }, options);
+    await User.findByIdAndUpdate(user_id, {$push: {receiver_list: receiver._id}}, options);
     await session.commitTransaction();
     session.endSession();
     return receiver;
@@ -339,7 +344,7 @@ const createInnerReceiver = async (user_id, receiver_account, name) => {
 }
 const getUserInfoByAccountNumber = async account_number => {
   try {
-    let account = await Account.findOne({ account_number, account_type: 'deposit' });
+    let account = await Account.findOne({account_number, account_type: 'deposit'});
     if (!account) {
       throw createError(404, 'Can not find account number!');
     }
@@ -383,7 +388,7 @@ const changePassword = async (user_id, old, newPassword) => {
 
     const password = bcrypt.hashSync(newPassword, 8);
 
-    await User.findByIdAndUpdate(user_id, { password: password });
+    await User.findByIdAndUpdate(user_id, {password: password});
     return {
       success: true
     }
@@ -402,7 +407,7 @@ const getAllNotification = async (user_id, ts) => {
       let notifies = await Notification.find({
         user_id: user_id,
         is_hide: false,
-        create_at: { $gt: ts }
+        create_at: {$gt: ts}
       });
 
       let return_ts = Date.now();
@@ -438,7 +443,7 @@ const getAllNotification = async (user_id, ts) => {
 
 const seenAllNotification = async (user_id) => {
   try {
-    let update = await Notification.updateMany({ user_id: user_id }, {
+    let update = await Notification.updateMany({user_id: user_id}, {
       is_seen: true,
     });
     return {
@@ -452,7 +457,7 @@ const seenAllNotification = async (user_id) => {
 const hideAllNotification = async user_id => {
   try {
 
-    let update = await Notification.updateMany({ user_id: user_id }, { is_hide: true });
+    let update = await Notification.updateMany({user_id: user_id}, {is_hide: true});
     return {
       number_of_modified: update.nModified
     }

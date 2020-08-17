@@ -28,13 +28,13 @@ const createCustomer = async info => {
   const session = await User.startSession();
   session.startTransaction();
   try {
-    const options = {session};
+    const options = { session };
     const oldUser = await User.findOne({
       email
     });
     if (oldUser) {
       // this user is used;
-      throw createError(400, {message: 'This email have been used'});
+      throw createError(400, { message: 'This email have been used' });
     }
     const user = await User(new_user).save(options);
     if (!user) {
@@ -49,7 +49,7 @@ const createCustomer = async info => {
     if (!account) {
       throw createError(422, 'can not create user account');
     }
-    const updateUser = await User.findOneAndUpdate({_id: user._id}, {$push: {accounts: account._id}}, options);
+    const updateUser = await User.findOneAndUpdate({ _id: user._id }, { $push: { accounts: account._id } }, options);
     await session.commitTransaction();
     session.endSession();
     return {
@@ -72,7 +72,7 @@ const createCustomer = async info => {
 
 const sendMoneyToCustomerAccount = async (account_number, amount) => {
   try {
-    let account = await Account.findOne({account_number});
+    let account = await Account.findOne({ account_number });
     let transaction = {
       src_acc: 'S2Q',
       src_bank: 'S2Q Bank',
@@ -83,7 +83,7 @@ const sendMoneyToCustomerAccount = async (account_number, amount) => {
     }
     let ret = transactionService.sendMoneyToAccount(transaction);
 
-    let notify = notifyFactory.createReceiveDebtNotification(account.user_id, amount, 'S2Q Bank', transaction.description);
+    let notify = notifyFactory.createReceiveMoneyNotification(account.user_id, amount, 'S2Q Bank', transaction.description);
     await Notification(notify).save();
 
     return ret;
@@ -94,11 +94,11 @@ const sendMoneyToCustomerAccount = async (account_number, amount) => {
 
 const getUserInformation = async email => {
   try {
-    let user = await User.findOne({email});
+    let user = await User.findOne({ email });
     if (!user) {
       throw createError(404, 'Not find user');
     }
-    let accounts = await Account.find({_id: {$in: user.accounts}});
+    let accounts = await Account.find({ _id: { $in: user.accounts } });
     return {
       info: {
         user_name: user.user_name,

@@ -115,7 +115,12 @@ const _doingInnerTransfer = async (transaction, options) => {
     };
     let result = await Transaction(new_transaction).save(options);
 
-    let notifySender = notifyFactory.createSendMoneyNotification(sender.user_id, amount_dec, sender.amount, description);
+    let notifySender = notifyFactory.createSendMoneyNotification(
+      sender.user_id,
+      amount_dec,
+      sender.amount,
+      description
+    );
     let notifyReceiver = notifyFactory.createReceiveMoneyNotification(receiver.user_id, amount_inc, receiver.amount, description);
 
     await Notification.insertMany([notifySender, notifyReceiver]);
