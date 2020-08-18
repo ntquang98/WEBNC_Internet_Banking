@@ -25,9 +25,12 @@ const requestInfo = async account => {
       },
       headers: headers
     });
-
-    console.log("response", response)
-    return response.data;
+    return {
+      full_name: response.data.result,
+      email: '',
+      account_number: account
+    }
+    //return response.data;
 
   } catch (error) {
     console.log(error.response)
@@ -41,13 +44,13 @@ const requestInfo = async account => {
 const sendMoney = async (user_id, transaction) => {
 
   try {
-    const mine = await MyBank.findOne({ bank_name: 'S2Q Bank' });
+    const mine = await MyBank.findOne({bank_name: 'S2Q Bank'});
     let ourPrivateKey = mine.private_key_pgp.replace(/\\n/g, '\n');
 
-    const { keys: [privateKey] } = await openpgp.key.readArmored(ourPrivateKey);
+    const {keys: [privateKey]} = await openpgp.key.readArmored(ourPrivateKey);
     await privateKey.decrypt(mine.pgp_passphrase);
 
-    const { signature: detachedSignature } = await openpgp.sign({
+    const {signature: detachedSignature} = await openpgp.sign({
       message: openpgp.cleartext.fromText('Nap tien'),
       privateKeys: [privateKey],
       detached: true

@@ -60,8 +60,13 @@ const getProfile = async (account_number) => {
     };
     const resp = await axios(options);
     const profile = resp.data;
-    console.log(profile)
-    return profile;
+    //console.log(profile)
+    return {
+      full_name: profile.account_profile.fullname,
+      email: profile.account_profile.email,
+      account_number: profile.account_profile.account_number,
+    }
+    //return profile;
   } catch (error) {
     console.log(error);
     console.error('Error: ', error.message);

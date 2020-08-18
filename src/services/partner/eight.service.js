@@ -83,7 +83,12 @@ const requestInfo = async accountId => {
     })
 
     if (response && !response.error) {
-      return response.data;
+      return {
+        full_name: response.data.data[0].full_name,
+        email: '',
+        account_number: accountId
+      }
+      //return response.data;
     } else {
       if (response && response.error && response.error.response && response.error.response.status) {
         throw createError(response.error.response.status, response.error.response.data);

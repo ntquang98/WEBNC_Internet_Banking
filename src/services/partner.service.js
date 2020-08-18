@@ -65,8 +65,18 @@ const _requestNKLBank = async (data) => {
       response_body: response.data.info,
       signature: response.data.sign
     }
-    console.log(response)
-    return data.transaction_type === '?' ? response.data : {request, response: ret_response};
+    if (data.transaction_type === '?') {
+      return {
+        full_name: response.data.fullname,
+        email: response.data.email,
+        account_number: response.data.account_number
+      }
+    } else {
+      return {
+        request,
+        response: ret_response
+      }
+    }
   } catch (error) {
     throw createError(error.response.status, error.response.message);
   }

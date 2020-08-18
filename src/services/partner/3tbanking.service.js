@@ -23,8 +23,12 @@ const getAccountInformation = async accountNumber => {
 
     let resp = await axios(options);
 
-    console.log(resp.data);
-    return resp.data;
+    //console.log(resp.data);
+    return {
+      ...resp.data.data,
+      email: ''
+    }
+    //return resp.data;
   } catch (error) {
     console.log('3T error: ', error);
     throw error;
