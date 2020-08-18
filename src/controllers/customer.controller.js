@@ -97,7 +97,6 @@ const createReceiver = async (req, res, next) => {
   try {
     let receiver;
     if (bank === 'S2Q Bank') {
-      console.log('create inner receiver')
       receiver = await customerService.createInnerReceiver(user_id, account_number, name);
     } else {
       receiver = await partnerService.saveReceiverFromPartnerBank(user_id, account_number, name, bank);

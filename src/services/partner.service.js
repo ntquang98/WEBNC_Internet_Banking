@@ -106,7 +106,7 @@ const requestInfoPartnerBank = async (account_number, bank_name) => {
   }
 }
 
-const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) => {
+const saveReceiverFromPartnerBank = async (user_id, account_number, name = null, bank) => {
   try {
     let receiver = await requestInfoPartnerBank(account_number, bank);
     if (!receiver) {
@@ -120,7 +120,7 @@ const saveReceiverFromPartnerBank = async (user_id, account_number, name, bank) 
       bank_name: bank
     }
 
-    let ret = await ReceiverList(saveReceiver);
+    let ret = await ReceiverList(saveReceiver).save();
     await User.findByIdAndUpdate(user_id, {$push: {receiver_list: ret._id}});
     return ret;
   } catch (error) {
