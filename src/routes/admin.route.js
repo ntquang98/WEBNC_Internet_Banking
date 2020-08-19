@@ -34,5 +34,8 @@ route.delete('/customers/:user_id', adminController.deleteCustomer);
 
 route.get('/partners/:partner', adminController.getOnePartner);
 
+route.get('/all_partner',
+  adminController.getAllPartner
+)
 
 module.exports = route;

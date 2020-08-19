@@ -135,12 +135,26 @@ const getAllUser = async _ => {
   }
 }
 
+const updateUser = async (user_id, user) => {
+  try {
+    let updateUser = await User.findByIdAndUpdate(user_id, user);
+    return {
+      update: updateUser
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 
 // TODO: query thong tin ngan hang doi tac, doi xoat
 
 const getAllPartner = async _ => {
   try {
-    let partners = await Bank.find();
+    let partners = await Bank
+      .find({bank_name: {$ne: 'testrsa'}})
+      .select({"bank_name": 1});
     return partners;
   } catch (error) {
     console.log(error);
