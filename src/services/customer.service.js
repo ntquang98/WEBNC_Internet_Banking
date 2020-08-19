@@ -458,7 +458,7 @@ const seenAllNotification = async (user_id) => {
 const hideAllNotification = async user_id => {
   try {
 
-    let update = await Notification.updateMany({user_id: user_id}, {is_hide: true});
+    let update = await Notification.deleteMany({user_id: user_id});
     return {
       number_of_modified: update.nModified
     }
