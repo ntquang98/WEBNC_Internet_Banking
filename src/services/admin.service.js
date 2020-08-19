@@ -150,15 +150,24 @@ const getAllPartner = async _ => {
 
 const getOnePartner = async name => {
   try {
-    let request = await Transaction
-      .find({des_bank: name})
-      .select({"_id": 0, "_v": 0});
-    let response = await Transaction
-      .find({src_bank: name})
-      .select({"_id": 0, "_v": 0});
+    let partnersTransaction = await RequestLog
+      .find({partner_name: name})
+      .select({"request_header": 0, "request_body": 0, "signature": 0})
+      .populate({path: 'transaction'});
+
+    let oursTransaction = await PartnerRequestLog
+      .find({partner_name: name})
+      .select({"request_uri": 0, "request_header": 0, "request_body": 0, "signature": 0})
+      .populate('transaction');
     return {
-      request,
-      response
+      partner_request: partnersTransaction,
+      we_response: oursTransaction,
+      sum_own: partnersTransaction.reduce((prev, curr) => {
+        return prev += curr.request_amount
+      }, 0),
+      sum_debt: oursTransaction.reduce((prev, curr) => {
+        return prev += curr.request_amount
+      }, 0)
     }
   } catch (error) {
     console.log(error);

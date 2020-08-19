@@ -102,6 +102,8 @@ const getOnePartner = async (req, res, next) => {
   }
 }
 
+
+
 module.exports = {
   createAdmin,
   createEmployee,

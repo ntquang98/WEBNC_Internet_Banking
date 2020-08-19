@@ -42,12 +42,12 @@ router.post('/new_password',
   }
 }); */
 
-router.get('/all_partner',
-  adminController.getAllPartner
-)
+//router.get('/all_partner',
+//adminController.getAllPartner
+//)
 
-router.get('/getOne/:partner',
-  adminController.getOnePartner
-)
+//router.get('/getOne/:partner',
+//adminController.getOnePartner
+//)
 
 module.exports = router;

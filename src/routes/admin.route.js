@@ -32,5 +32,7 @@ route.get('/users', adminController.getAllUser);
 route.delete('/employees/:user_id', adminController.deleteEmployee);
 route.delete('/customers/:user_id', adminController.deleteCustomer);
 
+route.get('/partners/:partner', adminController.getOnePartner);
+
 
 module.exports = route;

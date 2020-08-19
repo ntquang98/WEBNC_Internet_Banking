@@ -452,7 +452,11 @@ const saveMoney = async (user_id, account_number, save_account_number, amount) =
     };
 
     await Transaction(transaction).save(options);
-    let notify = notifyFactory.createSaveNotification(user_id, amount, update.account_name);
+    let notify = notifyFactory.createSaveNotification(
+      user_id,
+      amount,
+      updateSave.account_name
+    );
 
     await Notification(notify).save();
     await session.commitTransaction();

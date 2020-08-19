@@ -19,7 +19,7 @@ module.exports = {
     type: 'GET_DEBT',
     content: `Tài khoản của bạn vừa tăng ${amount}. Nội dung: Thanh toán nợ từ ${debtorName}, số tài khoản ${debtorAccount}`
   }),
-  createReceiveMoneyNotification: (userId, amount, balance, description) => {
+  createReceiveMoneyNotification: (userId, amount, balance, description = '') => {
     let date = new Date()
     return {
       user_id: userId,
@@ -27,7 +27,7 @@ module.exports = {
       content: `Tài khoản của bạn vừa tăng ${amount} vào lúc ${date.toLocaleDateString('vi-VN')}, số dư hiện tại ${balance}. Nội dung: ${description}.`
     }
   },
-  createSendMoneyNotification: (userId, amount, balance, description) => ({
+  createSendMoneyNotification: (userId, amount, balance, description = '') => ({
     user_id: userId,
     type: 'SEND_MONEY',
     content: `Tài khoản của bạn vừa giảm ${amount} vào lúc ${(new Date).toLocaleDateString('vi-VN')}, số dư hiện tại ${balance}. Nội dung: ${description}.`
