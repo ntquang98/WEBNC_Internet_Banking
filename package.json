@@ -34,7 +34,7 @@
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.3.0",
     "moment": "^2.25.3",
-    "moment-timezone": "^0.5.31",
+    "moment-timezone": "^0.5.35",
     "mongoose": "^5.9.14",
     "morgan": "^1.10.0",
     "node-rsa": "^1.1.1",
